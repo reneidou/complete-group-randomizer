@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Deine Gruppen - Gruppen-Zufallsgenerator{% endblock %}
+
+{% block content %}
+    <h2>Deine generierten Gruppen:</h2>
+
+    <div class="groups-container">
+        {% if groups %}
+            {% for group in groups %}
+                <div class="group-card">
+                    <h3>Gruppe {{ loop.index }}</h3>
+                    <ul>
+                        {% for person in group %}
+                            <li>{{ person }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Es konnten keine Gruppen generiert werden. Bitte überprüfe deine Eingaben.</p>
+            <p><a href="/">Zurück zur Startseite</a></p>
+        {% endif %}
+    </div>
+
+    <div class="actions-container">
+        <a href="/" class="button">Neue Gruppen erstellen</a>
+        </div>
+{% endblock %}

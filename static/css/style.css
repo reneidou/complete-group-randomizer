@@ -119,3 +119,75 @@ hr {
 #names-container input {
     margin-bottom: 8px; /* Etwas weniger Abstand zwischen den Namensfeldern */
 }
+
+/* Ergebnisdarstellung der Gruppen */
+.groups-container {
+    display: flex; /* Flexbox für nebeneinanderliegende Gruppen */
+    flex-wrap: wrap; /* Gruppen umbrechen, wenn der Platz nicht reicht */
+    gap: 20px; /* Abstand zwischen den Gruppenkarten */
+    justify-content: center; /* Gruppen zentrieren */
+    margin-top: 20px;
+}
+
+.group-card {
+    background-color: #e8f5e9; /* Sehr helles Grün */
+    border: 1px solid #c8e6c9;
+    border-radius: 8px;
+    padding: 20px;
+    flex: 1 1 calc(33% - 40px); /* Nimmt 1/3 der Breite ein, mit Anpassung für Gap */
+    min-width: 250px; /* Mindestbreite, damit es auf kleineren Bildschirmen nicht zu eng wird */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* Leichter Schatten */
+    text-align: center;
+}
+
+.group-card h3 {
+    color: #2e7d32; /* Dunkleres Grün */
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.group-card ul {
+    list-style-type: none; /* Keine Aufzählungszeichen */
+    padding: 0;
+    margin: 0;
+}
+
+.group-card ul li {
+    background-color: #fff;
+    margin-bottom: 8px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+/* Aktionen-Container (z.B. für "Neue Gruppen erstellen") */
+.actions-container {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.actions-container .button {
+    display: inline-block; /* Damit Padding und Margin funktionieren */
+    background-color: #007bff; /* Blau */
+    color: white;
+    padding: 12px 25px;
+    border-radius: 5px;
+    text-decoration: none; /* Keine Unterstreichung */
+    font-size: 1.1em;
+    transition: background-color 0.3s ease;
+}
+
+.actions-container .button:hover {
+    background-color: #0056b3;
+}
+
+/* Stil für Fehlermeldungen (optional) */
+.error-message {
+    background-color: #f8d7da; /* Helles Rot */
+    color: #721c24; /* Dunkleres Rot */
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    text-align: center;
+}

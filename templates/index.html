@@ -4,6 +4,9 @@
 
 {% block content %}
     <h2>Willkommen beim Gruppen-Zufallsgenerator!</h2>
+    {% if error_message %}
+        <p class="error-message">{{ error_message }}</p>
+    {% endif %}
     <p>Erstelle schnell und einfach Gruppen für dein Projekt, dein Training oder dein Team. Egal ob Sport oder Projekte, hier bist du richtig.</p>
 
     <form action="/generate" method="post">
