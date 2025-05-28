@@ -52,3 +52,70 @@ footer {
     width: 100%; /* Volle Breite */
     margin-top: 30px; /* Abstand zum Inhalt darüber */
 }
+
+/* Formular-Bereich */
+.form-section {
+    margin-bottom: 30px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.form-section h3 {
+    color: #4CAF50;
+    margin-top: 0;
+}
+
+/* Input-Felder und Select-Boxen */
+input[type="text"],
+input[type="number"],
+select {
+    width: calc(100% - 22px); /* Breite des Feldes abzüglich Padding und Border */
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Padding und Border sind in der Breite enthalten */
+}
+
+/* Buttons */
+button {
+    background-color: #007bff; /* Blau */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.submit-btn {
+    background-color: #4CAF50; /* Grün */
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2em;
+    margin-top: 20px;
+}
+
+.submit-btn:hover {
+    background-color: #45a049;
+}
+
+/* HR-Linie zur Trennung der Abschnitte */
+hr {
+    border: 0;
+    height: 1px;
+    background: #eee;
+    margin: 30px 0;
+}
+
+/* Anpassungen für die dynamischen Eingaben */
+#names-container input {
+    margin-bottom: 8px; /* Etwas weniger Abstand zwischen den Namensfeldern */
+}

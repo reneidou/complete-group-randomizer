@@ -6,7 +6,56 @@
     <h2>Willkommen beim Gruppen-Zufallsgenerator!</h2>
     <p>Erstelle schnell und einfach Gruppen für dein Projekt, dein Training oder dein Team. Egal ob Sport oder Projekte, hier bist du richtig.</p>
 
-    <h3>Los geht's:</h3>
-    <p>Auf dieser Seite kannst du später alle Namen und Einstellungen eingeben, um deine Gruppen zu generieren.</p>
+    <form action="/generate" method="post">
+        <div class="form-section">
+            <h3>1. Namen der Teilnehmer eingeben</h3>
+            <p>Gib die Namen der Personen ein, die du in Gruppen aufteilen möchtest.</p>
+            <div id="names-container">
+                <input type="text" name="name[]" placeholder="Name der Person" required>
+                <input type="text" name="name[]" placeholder="Name der Person" required>
+            </div>
+            <button type="button" id="add-name-btn">Weiteren Namen hinzufügen</button>
+        </div>
 
-    {% endblock %}
+        <hr>
+
+        <div class="form-section">
+            <h3>2. Gruppenkonstellation festlegen</h3>
+            <p>Wähle, wie du deine Gruppen bilden möchtest.</p>
+
+            <label for="group-type">Gruppenbildung nach:</label>
+            <select name="group_type" id="group-type">
+                <option value="num_groups">Anzahl Gruppen</option>
+                <option value="group_size">Gruppengrösse</option>
+            </select>
+
+            <div id="num-groups-input" class="group-setting-input">
+                <label for="num-groups">Anzahl der Gruppen:</label>
+                <input type="number" name="num_groups" id="num-groups" min="1" value="2">
+            </div>
+
+            <div id="group-size-input" class="group-setting-input" style="display: none;">
+                <label for="group-size">Gewünschte Gruppengrösse:</label>
+                <input type="number" name="group_size" id="group-size" min="1" value="3">
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="form-section">
+            <h3>3. Optionen (optional, später aktivierbar)</h3>
+            <p>Diese Funktionen werden später verfügbar sein. Für den Start konzentrieren wir uns auf die Kernfunktion.</p>
+            <ul>
+                <li>(Optional) Wahl zwischen Modus: Projekt-Teams oder Sport-Teams</li>
+                <li>(Optional) Möglichkeit, aus verschiedenen Sportarten zu wählen</li>
+                <li>(Optional) Eingabe von Ratings pro Teilnehmer/Name</li>
+                <li>(Optional) Eingabe von Rollenbezeichnungen/Tags</li>
+                <li>(Optional) Präferenz auswählen, welche Personen ich sicher in einer Gruppe zusammen haben möchte und welche sicher nicht</li>
+                <li>(Optional) Punktestände eintragen und Personenrating anpassen</li>
+            </ul>
+            <p>Jede dieser optionalen Funktionen wird mit einem Klick modular ein- oder ausgeblendet werden können, wenn sie implementiert sind.</p>
+        </div>
+
+        <button type="submit" class="submit-btn">Gruppen generieren</button>
+    </form>
+{% endblock %}
