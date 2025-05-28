@@ -1,0 +1,54 @@
+/* Allgemeine Body-Einstellungen */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4; /* Hellgrauer Hintergrund */
+    color: #333; /* Dunkler Text */
+}
+
+/* Header-Bereich */
+header {
+    background-color: #4CAF50; /* Grün */
+    color: white; /* Weisser Text */
+    padding: 1em 0; /* Oben/Unten 1em Polsterung, Links/Rechts 0 */
+    text-align: center; /* Text zentrieren */
+}
+
+/* Navigation */
+nav ul {
+    list-style-type: none; /* Keine Aufzählungszeichen */
+    padding: 0; /* Keine Standard-Polsterung */
+}
+
+nav ul li {
+    display: inline; /* Listelemente nebeneinander anzeigen */
+    margin-right: 20px; /* Abstand zwischen den Links */
+}
+
+nav ul li a {
+    color: white; /* Weisser Linktext */
+    text-decoration: none; /* Keine Unterstreichung */
+}
+
+/* Hauptinhaltsbereich */
+main {
+    padding: 20px; /* Innenabstand */
+    max-width: 900px; /* Maximale Breite */
+    margin: 20px auto; /* Oben/Unten 20px, horizontal zentrieren */
+    background-color: #fff; /* Weisser Hintergrund */
+    border-radius: 8px; /* Leicht abgerundete Ecken */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Leichter Schatten */
+}
+
+/* Footer-Bereich */
+footer {
+    text-align: center; /* Text zentrieren */
+    padding: 1em 0; /* Oben/Unten 1em Polsterung */
+    background-color: #333; /* Dunkelgrauer Hintergrund */
+    color: white; /* Weisser Text */
+    position: relative; /* Für die korrekte Positionierung */
+    bottom: 0; /* Am unteren Rand */
+    width: 100%; /* Volle Breite */
+    margin-top: 30px; /* Abstand zum Inhalt darüber */
+}
