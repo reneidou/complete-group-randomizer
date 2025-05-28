@@ -191,3 +191,78 @@ hr {
     border-radius: 5px;
     text-align: center;
 }
+
+/* Flash Messages */
+.flash-messages {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.flash-messages li {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.flash-messages .success {
+    background-color: #d4edda; /* Helles Grün */
+    color: #155724; /* Dunkleres Grün */
+    border: 1px solid #c3e6cb;
+}
+
+.flash-messages .error {
+    background-color: #f8d7da; /* Helles Rot */
+    color: #721c24; /* Dunkleres Rot */
+    border: 1px solid #f5c6cb;
+}
+
+.flash-messages .info {
+    background-color: #d1ecf1; /* Helles Blau */
+    color: #0c5460; /* Dunkleres Blau */
+    border: 1px solid #bee5eb;
+}
+
+/* Anpassungen für das Speicherformular in results.html */
+.save-btn {
+    background-color: #28a745; /* Grüner */
+}
+
+.save-btn:hover {
+    background-color: #218838;
+}
+
+/* Container für gespeicherte Team-Konfigurationen auf my_teams.html */
+.team-configs-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive Gitter */
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.config-card {
+    background-color: #f0f8ff; /* Sehr helles Blau */
+    border: 1px solid #d0e8ff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.config-card h3 {
+    color: #0056b3; /* Dunkleres Blau */
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.config-card p {
+    font-size: 0.9em;
+    color: #555;
+}
+
+.button-small {
+    padding: 8px 15px;
+    font-size: 0.9em;
+    margin-top: 15px;
+}

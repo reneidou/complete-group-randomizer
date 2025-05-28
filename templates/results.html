@@ -19,11 +19,27 @@
             {% endfor %}
         {% else %}
             <p>Es konnten keine Gruppen generiert werden. Bitte überprüfe deine Eingaben.</p>
-            <p><a href="/">Zurück zur Startseite</a></p>
         {% endif %}
     </div>
 
     <div class="actions-container">
         <a href="/" class="button">Neue Gruppen erstellen</a>
-        </div>
+
+        {% if g.user %} {# Nur anzeigen, wenn ein Benutzer angemeldet ist #}
+            <hr>
+            <h3>Konfiguration speichern</h3>
+            <p>Gib einen Namen für diese Teamkonfiguration ein, um sie zu speichern.</p>
+            <form action="{{ url_for('save_config') }}" method="post">
+                <input type="text" name="config_name" placeholder="Name der Konfiguration (z.B. 'Volleyball-Training 2025')" required>
+
+                {# Versteckte Felder zum Übergeben der Daten - JETZT OHNE |tojson #}
+                <input type="hidden" name="all_names_json" value="{{ all_names_json }}">
+                <input type="hidden" name="group_settings_json" value="{{ group_settings_json }}">
+
+                <button type="submit" class="button submit-btn save-btn">Konfiguration speichern</button>
+            </form>
+        {% else %}
+            <p>Möchtest du diese Konfiguration speichern? <a href="{{ url_for('login') }}">Melde dich an</a> oder <a href="{{ url_for('register') }}">registriere dich</a>!</p>
+        {% endif %}
+    </div>
 {% endblock %}

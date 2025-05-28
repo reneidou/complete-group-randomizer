@@ -4,18 +4,32 @@
 
 {% block content %}
     <h2>Willkommen beim Gruppen-Zufallsgenerator!</h2>
-    {% if error_message %}
-        <p class="error-message">{{ error_message }}</p>
-    {% endif %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flash-messages">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
     <p>Erstelle schnell und einfach Gruppen für dein Projekt, dein Training oder dein Team. Egal ob Sport oder Projekte, hier bist du richtig.</p>
 
-    <form action="/generate" method="post">
+    <form action="{{ url_for('generate_groups') }}" method="post">
         <div class="form-section">
             <h3>1. Namen der Teilnehmer eingeben</h3>
             <p>Gib die Namen der Personen ein, die du in Gruppen aufteilen möchtest.</p>
             <div id="names-container">
-                <input type="text" name="name[]" placeholder="Name der Person" required>
-                <input type="text" name="name[]" placeholder="Name der Person" required>
+                {# Felder für Namen dynamisch generieren oder mit geladenen Namen füllen #}
+                {% if loaded_names %}
+                    {% for name in loaded_names %}
+                        <input type="text" name="name[]" placeholder="Name der Person" value="{{ name }}" required>
+                    {% endfor %}
+                {% else %}
+                    {# Standardmässig 2 leere Felder, wenn nichts geladen wurde #}
+                    <input type="text" name="name[]" placeholder="Name der Person" required>
+                    <input type="text" name="name[]" placeholder="Name der Person" required>
+                {% endif %}
             </div>
             <button type="button" id="add-name-btn">Weiteren Namen hinzufügen</button>
         </div>
@@ -28,18 +42,19 @@
 
             <label for="group-type">Gruppenbildung nach:</label>
             <select name="group_type" id="group-type">
-                <option value="num_groups">Anzahl Gruppen</option>
-                <option value="group_size">Gruppengrösse</option>
+                {# `selected` Attribut setzen, falls settings geladen wurden #}
+                <option value="num_groups" {% if loaded_settings and loaded_settings.group_type == 'num_groups' %}selected{% endif %}>Anzahl Gruppen</option>
+                <option value="group_size" {% if loaded_settings and loaded_settings.group_type == 'group_size' %}selected{% endif %}>Gruppengrösse</option>
             </select>
 
-            <div id="num-groups-input" class="group-setting-input">
+            <div id="num-groups-input" class="group-setting-input" style="{% if loaded_settings and loaded_settings.group_type == 'num_groups' %}display: block;{% else %}display: none;{% endif %}">
                 <label for="num-groups">Anzahl der Gruppen:</label>
-                <input type="number" name="num_groups" id="num-groups" min="1" value="2">
+                <input type="number" name="num_groups" id="num-groups" min="1" value="{{ loaded_settings.num_groups if loaded_settings and loaded_settings.num_groups else 2 }}" {% if not loaded_settings or loaded_settings.group_type == 'num_groups' %}required{% endif %}>
             </div>
 
-            <div id="group-size-input" class="group-setting-input" style="display: none;">
+            <div id="group-size-input" class="group-setting-input" style="{% if loaded_settings and loaded_settings.group_type == 'group_size' %}display: block;{% else %}display: none;{% endif %}">
                 <label for="group-size">Gewünschte Gruppengrösse:</label>
-                <input type="number" name="group_size" id="group-size" min="1" value="3">
+                <input type="number" name="group_size" id="group-size" min="1" value="{{ loaded_settings.group_size if loaded_settings and loaded_settings.group_size else 3 }}" {% if loaded_settings and loaded_settings.group_type == 'group_size' %}required{% endif %}>
             </div>
         </div>
 

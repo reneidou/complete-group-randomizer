@@ -12,7 +12,14 @@
         <nav>
             <ul>
                 <li><a href="/">Home</a></li>
-                </ul>
+                {% if g.user %} {# Wenn ein Benutzer angemeldet ist #}
+                    <li><a href="{{ url_for('my_teams') }}">Meine Teams</a></li>
+                    <li><a href="{{ url_for('logout') }}">Abmelden ({{ g.user.username }})</a></li>
+                {% else %} {# Wenn kein Benutzer angemeldet ist #}
+                    <li><a href="{{ url_for('register') }}">Registrieren</a></li>
+                    <li><a href="{{ url_for('login') }}">Anmelden</a></li>
+                {% endif %}
+            </ul>
         </nav>
     </header>
 
