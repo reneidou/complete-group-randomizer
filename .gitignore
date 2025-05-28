@@ -1,0 +1,11 @@
+# Python-spezifische Dateien
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python/
+venv/
+.env
+.idea/ # Wenn du PyCharm oder andere JetBrains IDEs nutzt
+*.sqlite3 # Für die SQLite-Datenbank
+instance/ # Flask Instanzordner
