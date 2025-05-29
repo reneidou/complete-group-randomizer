@@ -11,9 +11,9 @@
         <h1>Gruppen-Zufallsgenerator</h1>
         <nav>
             <ul>
-                <li><a href="/">Home</a></li>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
                 {% if g.user %} {# Wenn ein Benutzer angemeldet ist #}
-                    <li><a href="{{ url_for('my_teams') }}">Meine Teams</a></li>
+                    <li><a href="{{ url_for('my_player_lists') }}">Meine Namenslisten</a></li> {# Geändert: my_teams zu my_player_lists #}
                     <li><a href="{{ url_for('logout') }}">Abmelden ({{ g.user.username }})</a></li>
                 {% else %} {# Wenn kein Benutzer angemeldet ist #}
                     <li><a href="{{ url_for('register') }}">Registrieren</a></li>
@@ -24,6 +24,16 @@
     </header>
 
     <main>
+        {# Flash Messages hier zentral anzeigen #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
         {% block content %}{% endblock %}
     </main>
 

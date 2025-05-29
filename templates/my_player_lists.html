@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Meine Namenslisten - Gruppen-Zufallsgenerator{% endblock %}
+
+{% block content %}
+    <h2>Meine gespeicherten Namenslisten</h2>
+
+    {# Flash Messages hier zentral anzeigen (aus base.html übernommen) #}
+    {#
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flash-messages">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    #}
+
+    {% if user_player_lists %}
+        <div class="player-lists-container">
+            {% for player_list in user_player_lists %}
+                <div class="list-card">
+                    <h3>{{ player_list.name }}</h3>
+                    <p>Erstellt am: {{ player_list.timestamp.strftime('%d.%m.%Y %H:%M') }}</p>
+                    <p>Anzahl Namen: {{ (player_list.players_json | fromjson) | length }}</p>
+                    <div class="list-actions">
+                        {# Link zum Laden der Liste auf der Startseite #}
+                        <a href="{{ url_for('load_player_list', list_id=player_list.id) }}" class="button button-small load-btn">Laden</a>
+
+                        {# Formular zum Löschen der Liste #}
+                        <form action="{{ url_for('delete_player_list', list_id=player_list.id) }}" method="post" style="display:inline;">
+                            <button type="submit" class="button button-small delete-btn" onclick="return confirm('Bist du sicher, dass du diese Namensliste löschen möchtest?');">Löschen</button>
+                        </form>
+                    </div>
+                    <div class="generated-groups-summary">
+                        <h4>Generierte Gruppen:</h4>
+                        {% if player_list.generated_groups %}
+                            <ul>
+                                {% for group in player_list.generated_groups | sort(attribute='timestamp', reverse=true) %}
+                                    <li>
+                                        {{ group.name or 'Ohne Namen' }} ({{ group.timestamp.strftime('%d.%m.%Y %H:%M') }})
+                                        <div class="generated-group-actions">
+                                            <a href="{{ url_for('load_generated_group', group_id=group.id) }}" class="button button-x-small load-btn">Laden</a>
+                                            <form action="{{ url_for('delete_generated_group', group_id=group.id) }}" method="post" style="display:inline;">
+                                                <button type="submit" class="button button-x-small delete-btn" onclick="return confirm('Bist du sicher, dass du diese generierte Gruppe löschen möchtest?');">Löschen</button>
+                                            </form>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>Noch keine Gruppen für diese Liste generiert.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Du hast noch keine Namenslisten gespeichert. Generiere jetzt welche auf der <a href="{{ url_for('home') }}">Startseite</a>!</p>
+    {% endif %}
+
+    <div class="actions-container">
+        <a href="{{ url_for('home') }}" class="button">Neue Gruppe erstellen</a>
+    </div>
+{% endblock %}

@@ -4,17 +4,9 @@
 
 {% block content %}
     <h2>Willkommen beim Gruppen-Zufallsgenerator!</h2>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <ul class="flash-messages">
-                {% for category, message in messages %}
-                    <li class="{{ category }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
     <p>Erstelle schnell und einfach Gruppen für dein Projekt, dein Training oder dein Team. Egal ob Sport oder Projekte, hier bist du richtig.</p>
 
+    {# Formular zur Generierung von Gruppen #}
     <form action="{{ url_for('generate_groups') }}" method="post">
         <div class="form-section">
             <h3>1. Namen der Teilnehmer eingeben</h3>
@@ -23,12 +15,21 @@
                 {# Felder für Namen dynamisch generieren oder mit geladenen Namen füllen #}
                 {% if loaded_names %}
                     {% for name in loaded_names %}
-                        <input type="text" name="name[]" placeholder="Name der Person" value="{{ name }}" required>
+                        <div class="name-input-wrapper">
+                            <input type="text" name="name[]" placeholder="Name der Person" value="{{ name }}" required>
+                            <button type="button" class="remove-name-btn" aria-label="Namenfeld entfernen">x</button>
+                        </div>
                     {% endfor %}
                 {% else %}
-                    {# Standardmässig 2 leere Felder, wenn nichts geladen wurde #}
-                    <input type="text" name="name[]" placeholder="Name der Person" required>
-                    <input type="text" name="name[]" placeholder="Name der Person" required>
+                    {# Standard-Eingabefelder, wenn keine Namen geladen wurden #}
+                    <div class="name-input-wrapper">
+                        <input type="text" name="name[]" placeholder="Name der Person" required>
+                        <button type="button" class="remove-name-btn" aria-label="Namenfeld entfernen">x</button>
+                    </div>
+                    <div class="name-input-wrapper">
+                        <input type="text" name="name[]" placeholder="Name der Person" required>
+                        <button type="button" class="remove-name-btn" aria-label="Namenfeld entfernen">x</button>
+                    </div>
                 {% endif %}
             </div>
             <button type="button" id="add-name-btn">Weiteren Namen hinzufügen</button>
@@ -42,19 +43,18 @@
 
             <label for="group-type">Gruppenbildung nach:</label>
             <select name="group_type" id="group-type">
-                {# `selected` Attribut setzen, falls settings geladen wurden #}
                 <option value="num_groups" {% if loaded_settings and loaded_settings.group_type == 'num_groups' %}selected{% endif %}>Anzahl Gruppen</option>
                 <option value="group_size" {% if loaded_settings and loaded_settings.group_type == 'group_size' %}selected{% endif %}>Gruppengrösse</option>
             </select>
 
-            <div id="num-groups-input" class="group-setting-input" style="{% if loaded_settings and loaded_settings.group_type == 'num_groups' %}display: block;{% else %}display: none;{% endif %}">
-                <label for="num-groups">Anzahl der Gruppen:</label>
-                <input type="number" name="num_groups" id="num-groups" min="1" value="{{ loaded_settings.num_groups if loaded_settings and loaded_settings.num_groups else 2 }}" {% if not loaded_settings or loaded_settings.group_type == 'num_groups' %}required{% endif %}>
+            <div id="num-groups-input" class="group-setting-input" style="display: {% if loaded_settings and loaded_settings.group_type == 'group_size' %}none{% else %}block{% endif %};">
+                <label for="num-groups">Gewünschte Anzahl Gruppen:</label>
+                <input type="number" name="num_groups" id="num-groups" min="1" value="{{ loaded_settings.num_groups if loaded_settings and loaded_settings.num_groups else 2 }}" {% if loaded_settings and loaded_settings.group_type == 'group_size' %}disabled{% else %}required{% endif %}>
             </div>
 
-            <div id="group-size-input" class="group-setting-input" style="{% if loaded_settings and loaded_settings.group_type == 'group_size' %}display: block;{% else %}display: none;{% endif %}">
+            <div id="group-size-input" class="group-setting-input" style="display: {% if loaded_settings and loaded_settings.group_type == 'num_groups' %}none{% else %}block{% endif %};">
                 <label for="group-size">Gewünschte Gruppengrösse:</label>
-                <input type="number" name="group_size" id="group-size" min="1" value="{{ loaded_settings.group_size if loaded_settings and loaded_settings.group_size else 3 }}" {% if loaded_settings and loaded_settings.group_type == 'group_size' %}required{% endif %}>
+                <input type="number" name="group_size" id="group-size" min="1" value="{{ loaded_settings.group_size if loaded_settings and loaded_settings.group_size else 3 }}" {% if loaded_settings and loaded_settings.group_type == 'num_groups' %}disabled{% else %}required{% endif %}>
             </div>
         </div>
 
@@ -74,6 +74,28 @@
             <p>Jede dieser optionalen Funktionen wird mit einem Klick modular ein- oder ausgeblendet werden können, wenn sie implementiert sind.</p>
         </div>
 
+        {# Verstecktes Feld, um die ID der aktuell geladenen PlayerList zu übergeben #}
+        {% if selected_player_list_id %}
+            <input type="hidden" name="selected_player_list_id" value="{{ selected_player_list_id }}">
+        {% endif %}
+
         <button type="submit" class="submit-btn">Gruppen generieren</button>
     </form>
+
+    {% if g.user %} {# Nur anzeigen, wenn ein Benutzer angemeldet ist #}
+        <hr>
+        <h3>Namensliste speichern</h3>
+        <p>Speichere die aktuelle Liste der Namen, um sie später wiederzuverwenden.</p>
+        <form action="{{ url_for('save_player_list') }}" method="post" id="save-player-list-form">
+            <input type="text" name="list_name" placeholder="Name der Namensliste (z.B. 'Klasse A')" required>
+            {# Die Namenfelder werden dynamisch vom JavaScript in dieses Formular kopiert #}
+            <div id="names-for-saving-container" style="display: none;">
+                {# JavaScript wird hier die Namenfelder einfügen #}
+            </div>
+            <button type="submit" class="button submit-btn save-btn">Namensliste speichern</button>
+        </form>
+    {% else %}
+        <p>Möchtest du deine Namenslisten speichern? <a href="{{ url_for('login') }}">Melde dich an</a> oder <a href="{{ url_for('register') }}">registriere dich</a>!</p>
+    {% endif %}
+
 {% endblock %}
