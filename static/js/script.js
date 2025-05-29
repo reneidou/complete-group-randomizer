@@ -3,6 +3,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const addNameBtn = document.getElementById('add-name-btn');
     const savePlayerListForm = document.getElementById('save-player-list-form');
     const namesForSavingContainer = document.getElementById('names-for-saving-container');
+    const generateGroupsForm = document.getElementById('generate-groups-form'); // Das Hauptformular für die Generierung
+
+    const groupTypeSelect = document.getElementById('group-type');
+    const numGroupsInputDiv = document.getElementById('num-groups-input');
+    const groupSizeInputDiv = document.getElementById('group-size-input');
+    const numGroupsInput = document.getElementById('num-groups');
+    const groupSizeInput = document.getElementById('group-size');
 
     // Funktion zum Hinzufügen eines neuen Namensfeldes
     function addNameField(nameValue = '') {
@@ -33,28 +40,30 @@ document.addEventListener('DOMContentLoaded', function() {
         wrapper.appendChild(newInput);
         wrapper.appendChild(removeBtn);
         namesContainer.appendChild(wrapper);
+
+        // Fokus auf das neue Eingabefeld setzen
+        newInput.focus();
     }
 
-    // Initialen Zustand beim Laden der Seite: Wenn keine Namen geladen sind,
-    // stelle sicher, dass es mindestens zwei leere Felder gibt (oder die Standardfelder in Jinja).
-    // Wenn Namen geladen sind, werden sie von Jinja direkt gerendert, also kein JS nötig.
-    if (namesContainer.children.length === 0) {
-        addNameField();
-        addNameField(); // Füge standardmässig zwei Felder hinzu, falls keine geladen wurden
-    }
-
-    addNameBtn.addEventListener('click', function() {
-        addNameField();
+    // Beim Laden der Seite sicherstellen, dass die remove-Buttons ihre Event Listener haben
+    namesContainer.querySelectorAll('.remove-name-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            if (namesContainer.children.length > 1) {
+                namesContainer.removeChild(button.closest('.name-input-wrapper'));
+            } else {
+                alert("Es muss mindestens ein Namensfeld vorhanden sein.");
+            }
+        });
     });
 
+    // Event Listener für "Weiteren Namen hinzufügen" Button
+    if (addNameBtn) {
+        addNameBtn.addEventListener('click', function() {
+            addNameField();
+        });
+    }
+
     // Logik zum Umschalten zwischen "Anzahl Gruppen" und "Gruppengrösse"
-    const groupTypeSelect = document.getElementById('group-type');
-    const numGroupsInputDiv = document.getElementById('num-groups-input');
-    const groupSizeInputDiv = document.getElementById('group-size-input');
-    const numGroupsInput = document.getElementById('num-groups');
-    const groupSizeInput = document.getElementById('group-size');
-
-
     function updateGroupInputsVisibility() {
         if (groupTypeSelect.value === 'num_groups') {
             numGroupsInputDiv.style.display = 'block';
@@ -73,11 +82,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    groupTypeSelect.addEventListener('change', updateGroupInputsVisibility);
-
-    // Initialen Zustand beim Laden der Seite setzen
-    // Simuliert ein Change-Event, um die korrekte Anzeige beim ersten Laden zu gewährleisten
-    updateGroupInputsVisibility();
+    if (groupTypeSelect) {
+        groupTypeSelect.addEventListener('change', updateGroupInputsVisibility);
+        // Initialen Zustand beim Laden der Seite setzen
+        updateGroupInputsVisibility();
+    }
 
 
     // Event Listener für das Speichern der PlayerList
@@ -91,18 +100,53 @@ document.addEventListener('DOMContentLoaded', function() {
             // Sammle alle aktuellen Namen aus den Eingabefeldern
             const currentNameInputs = namesContainer.querySelectorAll('input[name="name[]"]');
             currentNameInputs.forEach(input => {
-                if (input.value.trim() !== '') { // Füge nur nicht-leere Namen hinzu
-                    const hiddenInput = document.createElement('input');
-                    hiddenInput.type = 'hidden';
-                    hiddenInput.name = 'name[]';
-                    hiddenInput.value = input.value.trim();
-                    namesForSavingContainer.appendChild(hiddenInput);
-                }
+                // Füge alle Namen hinzu, auch leere, damit die Reihenfolge stimmt, wenn wir später eine Bearbeitungsfunktion bauen
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'name[]';
+                hiddenInput.value = input.value.trim(); // Trimme den Wert, aber behalte leere Felder
+                namesForSavingContainer.appendChild(hiddenInput);
             });
 
-            if (namesForSavingContainer.children.length === 0) {
+            // Für die Speicherung der PlayerList MÜSSEN Namen vorhanden sein
+            const actualNames = Array.from(currentNameInputs).filter(input => input.value.trim() !== '');
+            if (actualNames.length === 0) {
                 alert("Bitte gib Namen ein, um die Liste zu speichern.");
                 event.preventDefault(); // Verhindert das Absenden des Formulars
+            }
+        });
+    }
+
+    // Logik für Enter-Taste in den Namensfeldern
+    if (namesContainer) {
+        namesContainer.addEventListener('keydown', function(event) {
+            // Überprüfen, ob die Enter-Taste (Key 13) gedrückt wurde
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Verhindere das Standard-Formular-Submit
+
+                const target = event.target;
+                // Prüfen, ob das Event von einem Namens-Inputfeld kommt
+                if (target.matches('input[name="name[]"]')) {
+                    const allNameInputs = Array.from(namesContainer.querySelectorAll('input[name="name[]"]'));
+                    const currentIndex = allNameInputs.indexOf(target);
+                    const currentInputValue = target.value.trim();
+
+                    // Fall 1: Cursor in einem leeren Textfeld -> Gruppen generieren
+                    if (currentInputValue === '') {
+                        generateGroupsForm.submit(); // Sende das Hauptformular ab
+                    } 
+                    // Fall 2: Letztes Namensfeld und nicht leer -> neues Feld hinzufügen
+                    else if (currentIndex === allNameInputs.length - 1) {
+                        addNameField();
+                    } 
+                    // Fall 3: Nicht das letzte Feld und nicht leer -> Fokus auf nächstes Feld
+                    else {
+                        const nextInput = allNameInputs[currentIndex + 1];
+                        if (nextInput) {
+                            nextInput.focus();
+                        }
+                    }
+                }
             }
         });
     }

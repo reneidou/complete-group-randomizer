@@ -7,7 +7,7 @@
     <p>Erstelle schnell und einfach Gruppen für dein Projekt, dein Training oder dein Team. Egal ob Sport oder Projekte, hier bist du richtig.</p>
 
     {# Formular zur Generierung von Gruppen #}
-    <form action="{{ url_for('generate_groups') }}" method="post">
+    <form action="{{ url_for('generate_groups') }}" method="post" id="generate-groups-form">
         <div class="form-section">
             <h3>1. Namen der Teilnehmer eingeben</h3>
             <p>Gib die Namen der Personen ein, die du in Gruppen aufteilen möchtest.</p>
@@ -52,9 +52,9 @@
                 <input type="number" name="num_groups" id="num-groups" min="1" value="{{ loaded_settings.num_groups if loaded_settings and loaded_settings.num_groups else 2 }}" {% if loaded_settings and loaded_settings.group_type == 'group_size' %}disabled{% else %}required{% endif %}>
             </div>
 
-            <div id="group-size-input" class="group-setting-input" style="display: {% if loaded_settings and loaded_settings.group_type == 'num_groups' %}none{% else %}block{% endif %};">
+            <div id="group-size-input" class="group-setting-input" style="display: {% if loaded_settings and loaded_settings.group_type == 'group_size' %}block{% else %}none{% endif %};">
                 <label for="group-size">Gewünschte Gruppengrösse:</label>
-                <input type="number" name="group_size" id="group-size" min="1" value="{{ loaded_settings.group_size if loaded_settings and loaded_settings.group_size else 3 }}" {% if loaded_settings and loaded_settings.group_type == 'num_groups' %}disabled{% else %}required{% endif %}>
+                <input type="number" name="group_size" id="group-size" min="1" value="{{ loaded_settings.group_size if loaded_settings and loaded_settings.group_size else 3 }}" {% if loaded_settings and loaded_settings.group_type == 'group_size' %}required{% else %}disabled{% endif %}>
             </div>
         </div>
 
@@ -92,10 +92,12 @@
             <div id="names-for-saving-container" style="display: none;">
                 {# JavaScript wird hier die Namenfelder einfügen #}
             </div>
+            {% if selected_player_list_id %}
+                <input type="hidden" name="selected_player_list_id_for_update" value="{{ selected_player_list_id }}">
+            {% endif %}
             <button type="submit" class="button submit-btn save-btn">Namensliste speichern</button>
         </form>
     {% else %}
         <p>Möchtest du deine Namenslisten speichern? <a href="{{ url_for('login') }}">Melde dich an</a> oder <a href="{{ url_for('register') }}">registriere dich</a>!</p>
     {% endif %}
-
 {% endblock %}

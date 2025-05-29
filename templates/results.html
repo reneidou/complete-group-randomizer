@@ -23,12 +23,12 @@
     </div>
 
     <div class="actions-container">
-        <a href="/" class="button">Neue Gruppen erstellen</a>
+        <a href="{{ url_for('home') }}" class="button">Neue Gruppen erstellen</a>
 
         {% if g.user %} {# Nur anzeigen, wenn ein Benutzer angemeldet ist #}
             <hr>
-            <h3>Konfiguration speichern</h3>
-            <p>Gib einen Namen für diese Teamkonfiguration ein, um sie zu speichern.</p>
+            <h3>Gruppeneinteilung speichern</h3>
+            <p>Gib einen Namen für diese Gruppeneinteilung ein, um sie zu speichern.</p>
             <form action="{{ url_for('save_generated_group') }}" method="post">
                 <input type="text" name="group_name" placeholder="Name der Gruppeneinteilung (z.B. 'Training 2025 - Runde 1')" required>
 
@@ -36,17 +36,18 @@
                 {% if session.get('selected_player_list_id_for_save') %}
                     <input type="hidden" name="player_list_id" value="{{ session.get('selected_player_list_id_for_save') }}">
                 {% else %}
-                    {# Falls keine Liste geladen war, aber trotzdem gespeichert werden soll, müsste hier eine neue Liste erstellt werden
-                       oder der User muss dazu gezwungen werden, eine Liste auszuwählen/zu speichern.
-                       Für jetzt nehmen wir an, dass immer eine player_list_id übergeben wird, wenn man speichert.
-                       Andernfalls müsste die Logik im Backend angepasst werden, um diese Fälle zu behandeln. #}
+                    <p class="info-message">Keine Namensliste aktiv. Um diese Gruppeneinteilung zu speichern, musst du zuerst eine <a href="{{ url_for('home') }}">Namensliste laden oder eine neue erstellen und speichern</a>.</p>
+                    {# Wenn keine player_list_id vorhanden ist, sollte der Save-Button deaktiviert sein oder die Form nicht angezeigt werden #}
+                    <button type="submit" class="button submit-btn save-btn" disabled>Gruppeneinteilung speichern</button>
                 {% endif %}
 
                 {# Versteckte Felder zum Übergeben der Daten - JETZT OHNE |tojson #}
                 <input type="hidden" name="all_names_json" value="{{ all_names_json }}">
                 <input type="hidden" name="group_settings_json" value="{{ group_settings_json }}">
 
-                <button type="submit" class="button submit-btn save-btn">Gruppeneinteilung speichern</button>
+                {% if session.get('selected_player_list_id_for_save') %}
+                    <button type="submit" class="button submit-btn save-btn">Gruppeneinteilung speichern</button>
+                {% endif %}
             </form>
         {% else %}
             <p>Möchtest du diese Konfiguration speichern? <a href="{{ url_for('login') }}">Melde dich an</a> oder <a href="{{ url_for('register') }}">registriere dich</a>!</p>

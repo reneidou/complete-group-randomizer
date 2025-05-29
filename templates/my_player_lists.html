@@ -31,13 +31,14 @@
 
                         {# Formular zum Löschen der Liste #}
                         <form action="{{ url_for('delete_player_list', list_id=player_list.id) }}" method="post" style="display:inline;">
-                            <button type="submit" class="button button-small delete-btn" onclick="return confirm('Bist du sicher, dass du diese Namensliste löschen möchtest?');">Löschen</button>
+                            <button type="submit" class="button button-small delete-btn" onclick="return confirm('Bist du sicher, dass du diese Namensliste UND alle zugehörigen Gruppeneinteilungen löschen möchtest?');">Löschen Liste</button>
                         </form>
                     </div>
-                    <div class="generated-groups-summary">
-                        <h4>Generierte Gruppen:</h4>
+
+                    <div class="generated-groups-section">
+                        <h4>Gespeicherte Gruppeneinteilungen für "{{ player_list.name }}"</h4>
                         {% if player_list.generated_groups %}
-                            <ul>
+                            <ul class="generated-groups-list">
                                 {% for group in player_list.generated_groups | sort(attribute='timestamp', reverse=true) %}
                                     <li>
                                         {{ group.name or 'Ohne Namen' }} ({{ group.timestamp.strftime('%d.%m.%Y %H:%M') }})

@@ -1,11 +1,10 @@
 /* Allgemeine Body-Einstellungen */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f2f5; /* Ein etwas dunkleres Hellgrau für mehr Tiefe */
+    background-color: #f4f4f4; /* Hellgrauer Hintergrund */
     color: #333; /* Dunkler Text */
-    line-height: 1.6;
 }
 
 /* Header-Bereich */
@@ -14,32 +13,22 @@ header {
     color: white; /* Weisser Text */
     padding: 1em 0; /* Oben/Unten 1em Polsterung, Links/Rechts 0 */
     text-align: center; /* Text zentrieren */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Leichter Schatten für den Header */
 }
 
 /* Navigation */
 nav ul {
     list-style-type: none; /* Keine Aufzählungszeichen */
     padding: 0; /* Keine Standard-Polsterung */
-    margin: 0;
-    display: flex; /* Für flexible Anordnung der Links */
-    justify-content: center; /* Links zentrieren */
 }
 
 nav ul li {
-    margin: 0 15px; /* Abstand zwischen den Links */
+    display: inline; /* Listelemente nebeneinander anzeigen */
+    margin-right: 20px; /* Abstand zwischen den Links */
 }
 
 nav ul li a {
     color: white; /* Weisser Linktext */
     text-decoration: none; /* Keine Unterstreichung */
-    font-weight: bold;
-    padding: 5px 0; /* Mehr klickbarer Bereich */
-    transition: color 0.3s ease;
-}
-
-nav ul li a:hover {
-    color: #e0e0e0; /* Leichter Grauton beim Hover */
 }
 
 /* Hauptinhaltsbereich */
@@ -47,33 +36,36 @@ main {
     padding: 20px; /* Innenabstand */
     max-width: 900px; /* Maximale Breite */
     margin: 20px auto; /* Oben/Unten 20px, horizontal zentrieren */
-    background-color: #fff; /* Weisser Hintergrund für den Hauptbereich */
-    border-radius: 8px; /* Abgerundete Ecken */
-    box-shadow: 0 0 15px rgba(0,0,0,0.08); /* Dezenter Schatten */
+    background-color: white; /* Weisser Hintergrund für den Inhalt */
+    border-radius: 8px; /* Leicht abgerundete Ecken */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Leichter Schatten */
 }
 
-/* Formular-Bereiche */
-.form-section {
-    background-color: #f9f9f9;
-    padding: 20px;
-    margin-bottom: 25px; /* Mehr Abstand zwischen den Sektionen */
-    border-radius: 6px;
-    border: 1px solid #e0e0e0;
-}
-
-.form-section h3 {
-    color: #4CAF50;
-    margin-top: 0;
-    border-bottom: 2px solid #4CAF50;
-    padding-bottom: 10px;
+h1, h2, h3 {
+    color: #4CAF50; /* Grüne Überschriften */
+    text-align: center;
     margin-bottom: 20px;
 }
 
+p {
+    line-height: 1.6;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.form-section {
+    background-color: #e8f5e9; /* Sehr helles Grün */
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #c8e6c9; /* Leichter grüner Rand */
+}
+
 .form-section label {
-    display: block; /* Label über dem Inputfeld */
+    display: block;
     margin-bottom: 8px;
     font-weight: bold;
-    color: #555;
+    color: #388e3c; /* Dunkleres Grün für Labels */
 }
 
 .form-section input[type="text"],
@@ -86,188 +78,185 @@ main {
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box; /* Padding und Border werden in der Breite berücksichtigt */
-    font-size: 1em;
 }
 
-.form-section button {
-    display: block;
-    width: auto; /* Buttons nehmen nur benötigten Platz ein */
-    padding: 10px 20px;
-    background-color: #007bff; /* Blau für Standard-Buttons */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s ease;
-    margin-top: 10px; /* Abstand nach oben */
+.form-section ul {
+    list-style-type: disc;
+    margin-left: 20px;
+    padding: 0;
 }
 
-.form-section button:hover {
-    background-color: #0056b3;
+.form-section li {
+    margin-bottom: 5px;
 }
 
-/* Spezielle Stile für den "Namen hinzufügen" Button */
-#add-name-btn {
-    background-color: #28a745; /* Grüner */
-    margin-top: 15px; /* Mehr Abstand zu den Namensfeldern */
-}
-
-#add-name-btn:hover {
-    background-color: #218838;
-}
-
-/* Stil für die Container der Namensfelder */
+/* Dynamische Namenfelder-Container */
 #names-container {
-    margin-bottom: 20px;
-    border: 1px dashed #ddd; /* Gestrichelter Rahmen */
-    padding: 15px;
-    border-radius: 5px;
-    background-color: #fdfdfd;
+    margin-bottom: 15px;
 }
 
-/* Wrapper für einzelne Namensfelder und deren Entfernen-Button */
 .name-input-wrapper {
-    display: flex; /* Legt Input und Button nebeneinander */
-    gap: 5px; /* Kleiner Abstand zwischen Elementen */
+    display: flex; /* Für Input und Button nebeneinander */
+    gap: 5px; /* Abstand zwischen Input und Button */
     align-items: center; /* Vertikal zentrieren */
     margin-bottom: 10px; /* Abstand zwischen den Feldern */
 }
 
 .name-input-wrapper input[type="text"] {
     flex-grow: 1; /* Eingabefeld nimmt den meisten Platz ein */
-    margin-bottom: 0; /* Überschreibt den Standard-Margin des Inputs */
+    margin-bottom: 0; /* Keine zusätzliche untere Margin */
 }
 
 .remove-name-btn {
-    background-color: #f44336; /* Roter für Löschen */
-    color: white; /* Weisser Text */
-    border: none;
+    background-color: #f0f0f0; /* Helle Farbe */
+    color: #888; /* Dunklerer Text */
+    border: 1px solid #ccc;
     border-radius: 50%; /* Rund */
-    width: 30px; /* Feste Grösse */
-    height: 30px;
+    width: 28px; /* Feste Grösse */
+    height: 28px;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
     font-weight: bold;
-    font-size: 1em;
-    transition: background-color 0.2s ease, transform 0.2s ease;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease, color 0.2s ease;
     flex-shrink: 0; /* Verhindert, dass der Button schrumpft */
-    padding: 0; /* Entfernt internes Padding */
 }
 
 .remove-name-btn:hover {
-    background-color: #d32f2f;
-    transform: scale(1.1); /* Leichter Zoom-Effekt */
+    background-color: #e0e0e0;
+    color: #555;
 }
 
-/* Horizontale Linie */
-hr {
-    border: 0;
-    height: 1px;
-    background-color: #eee;
-    margin: 30px 0;
-}
-
-/* Aktionen-Container */
-.actions-container {
-    text-align: center;
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
-}
-
-.actions-container .button {
-    margin: 0 10px;
-}
-
-/* Allgemeine Button-Stile */
-.button {
+/* Buttons */
+.button, .submit-btn {
     display: inline-block;
-    padding: 12px 25px;
     background-color: #4CAF50; /* Grün */
     color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    padding: 10px 20px;
     border: none;
+    border-radius: 5px;
     cursor: pointer;
+    text-decoration: none; /* Für <a> Tags */
     font-size: 1em;
+    transition: background-color 0.3s ease;
+    margin-top: 10px; /* Abstand nach oben */
 }
 
-.button:hover {
-    background-color: #45a049;
-    transform: translateY(-2px); /* Leichter Hoch-Effekt beim Hover */
+.button:hover, .submit-btn:hover {
+    background-color: #45a049; /* Dunkleres Grün beim Hover */
 }
 
-.button-small {
-    padding: 8px 15px;
-    font-size: 0.9em;
-}
-
-.button-x-small {
-    padding: 5px 10px;
-    font-size: 0.8em;
-}
-
-/* Spezielle Button-Farben */
 .submit-btn {
-    background-color: #007bff; /* Blau */
+    width: auto; /* Breite an Inhalt anpassen */
+    display: block; /* Volle Breite für Submit-Buttons */
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.submit-btn:hover {
+.button.button-small {
+    padding: 5px 10px;
+    font-size: 0.85em;
+    margin: 5px 0; /* Kleinerer Rand für kleine Buttons */
+}
+
+.button.button-x-small {
+    padding: 3px 8px;
+    font-size: 0.75em;
+    margin: 2px 0;
+}
+
+.button.load-btn {
+    background-color: #007bff; /* Blau für Laden */
+}
+.button.load-btn:hover {
     background-color: #0056b3;
 }
 
-.save-btn {
-    background-color: #28a745; /* Grüner für Speichern */
-}
-
-.save-btn:hover {
-    background-color: #218838;
-}
-
-.load-btn {
-    background-color: #17a2b8; /* Türkisblau für Laden */
-}
-
-.load-btn:hover {
-    background-color: #138496;
-}
-
-.delete-btn {
+.button.delete-btn {
     background-color: #dc3545; /* Rot für Löschen */
 }
-
-.delete-btn:hover {
+.button.delete-btn:hover {
     background-color: #c82333;
+}
+
+
+/* Horizontaler Trenner */
+hr {
+    border: 0;
+    height: 1px;
+    background: #ccc;
+    margin: 30px 0;
 }
 
 /* Footer */
 footer {
     text-align: center;
     padding: 20px;
-    margin-top: 40px;
-    background-color: #333;
-    color: white;
+    color: #666;
     font-size: 0.9em;
+}
+
+/* Gruppen-Darstellung auf results.html */
+.groups-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsives Grid */
+    gap: 20px; /* Abstand zwischen den Gruppenkarten */
+    margin-top: 20px;
+}
+
+.group-card {
+    background-color: #f9f9f9; /* Sehr hellgrau */
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.group-card h3 {
+    color: #28a745; /* Grün für Gruppennamen */
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.group-card ul {
+    list-style-type: none; /* Keine Aufzählungszeichen */
+    padding: 0;
+}
+
+.group-card li {
+    padding: 5px 0;
+    border-bottom: 1px dotted #e0e0e0;
+}
+
+.group-card li:last-child {
+    border-bottom: none; /* Keine Linie unter dem letzten Element */
+}
+
+.actions-container {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.actions-container .button {
+    margin: 0 10px; /* Abstand zwischen Buttons */
 }
 
 /* Flash Messages */
 .flash-messages {
     list-style-type: none;
     padding: 0;
-    margin: 20px 0;
+    margin: 20px auto; /* Zentrieren */
+    max-width: 900px;
 }
 
 .flash-messages li {
-    padding: 12px 20px;
-    margin-bottom: 12px;
-    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
     font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 .flash-messages .success {
@@ -288,42 +277,83 @@ footer {
     border: 1px solid #bee5eb;
 }
 
-/* Container für generierte Gruppen auf results.html */
-.groups-container {
+/* Anpassungen für das Speicherformular in results.html */
+.save-btn {
+    background-color: #28a745; /* Grüner */
+}
+
+.save-btn:hover {
+    background-color: #218838;
+}
+
+/* Container für gespeicherte Team-Konfigurationen auf my_player_lists.html */
+.player-lists-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive Spalten */
-    gap: 20px; /* Abstand zwischen den Gruppenkarten */
-    margin-top: 30px;
-    margin-bottom: 40px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
 }
 
-.group-card {
-    background-color: #e8f5e9; /* Sehr helles Grün */
-    border: 1px solid #c8e6c9;
+.list-card {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
     border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    text-align: left;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
 }
 
-.group-card h3 {
-    color: #388e3c; /* Dunkleres Grün */
+.list-card h3 {
+    color: #4CAF50;
     margin-top: 0;
-    border-bottom: 1px dashed #a5d6a7; /* Gestrichelte Linie */
-    padding-bottom: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
-.group-card ul {
-    list-style-type: disc; /* Klassische Punkte */
-    padding-left: 25px; /* Einrückung */
-    margin: 0;
+.list-actions {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap; /* Erlaubt Umbruch auf kleineren Bildschirmen */
+    gap: 10px; /* Abstand zwischen den Buttons */
+    justify-content: flex-start;
+    align-items: center;
 }
 
-.group-card li {
-    margin-bottom: 5px;
-    color: #444;
+.list-actions .button, .list-actions form button {
+    flex-shrink: 0; /* Verhindert, dass Buttons kleiner werden */
+    margin: 0; /* Setze margin auf 0, da wir gap verwenden */
 }
 
-/* Container für gespeicherte PlayerLists auf my_player_lists.html */
-.player
+.generated-groups-section {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.generated-groups-section h4 {
+    color: #388e3c;
+    margin-bottom: 10px;
+}
+
+.generated-groups-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.generated-groups-list li {
+    background-color: #e8f5e9; /* Helle Farbe für einzelne Gruppeneinteilungen */
+    border: 1px solid #c8e6c9;
+    border-radius: 5px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9em;
+}
+
+.generated-group-actions {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+}
