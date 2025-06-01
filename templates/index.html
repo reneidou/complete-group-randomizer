@@ -17,64 +17,36 @@
                     {% for name in loaded_names %}
                         <div class="name-input-wrapper">
                             <input type="text" name="name[]" placeholder="Name der Person" value="{{ name }}" required>
-                            <button type="button" class="remove-name-btn" aria-label="Namenfeld entfernen">x</button>
+                            <button type="button" class="remove-name-btn" aria-label="Namenfeld entfernen">&times;</button>
                         </div>
                     {% endfor %}
                 {% else %}
-                    {# Standard-Eingabefelder, wenn keine Namen geladen wurden #}
-                    <div class="name-input-wrapper">
-                        <input type="text" name="name[]" placeholder="Name der Person" required>
-                        <button type="button" class="remove-name-btn" aria-label="Namenfeld entfernen">x</button>
-                    </div>
-                    <div class="name-input-wrapper">
-                        <input type="text" name="name[]" placeholder="Name der Person" required>
-                        <button type="button" class="remove-name-btn" aria-label="Namenfeld entfernen">x</button>
-                    </div>
+                    {# Standard-Eingabefelder, wenn keine Namen geladen wurden. Das JS fügt ein Feld hinzu, wenn es leer ist. #}
                 {% endif %}
             </div>
-            <button type="button" id="add-name-btn">Weiteren Namen hinzufügen</button>
+            <button type="button" id="add-name-btn" class="button">Weiteren Namen hinzufügen</button>
         </div>
 
-        <hr>
-
         <div class="form-section">
-            <h3>2. Gruppenkonstellation festlegen</h3>
-            <p>Wähle, wie du deine Gruppen bilden möchtest.</p>
-
-            <label for="group-type">Gruppenbildung nach:</label>
-            <select name="group_type" id="group-type">
-                <option value="num_groups" {% if loaded_settings and loaded_settings.group_type == 'num_groups' %}selected{% endif %}>Anzahl Gruppen</option>
-                <option value="group_size" {% if loaded_settings and loaded_settings.group_type == 'group_size' %}selected{% endif %}>Gruppengrösse</option>
+            <h3>2. Gruppeneinteilung festlegen</h3>
+            <label for="group-type">Wie möchtest du die Gruppen einteilen?</label>
+            <select id="group-type" name="group_type">
+                <option value="num_groups" {% if loaded_settings and loaded_settings.get('group_type') == 'num_groups' %}selected{% endif %}>Anzahl Gruppen</option>
+                <option value="group_size" {% if loaded_settings and loaded_settings.get('group_type') == 'group_size' %}selected{% endif %}>Gruppengröße</option>
             </select>
 
-            <div id="num-groups-input" class="group-setting-input" style="display: {% if loaded_settings and loaded_settings.group_type == 'group_size' %}none{% else %}block{% endif %};">
-                <label for="num-groups">Gewünschte Anzahl Gruppen:</label>
-                <input type="number" name="num_groups" id="num-groups" min="1" value="{{ loaded_settings.num_groups if loaded_settings and loaded_settings.num_groups else 2 }}" {% if loaded_settings and loaded_settings.group_type == 'group_size' %}disabled{% else %}required{% endif %}>
+            <div id="num-groups-input" style="display:none;">
+                <label for="num-groups">Anzahl der Gruppen:</label>
+                <input type="number" id="num-groups" name="num_groups" min="1" value="{{ loaded_settings.get('num_groups', 2) if loaded_settings else 2 }}">
             </div>
 
-            <div id="group-size-input" class="group-setting-input" style="display: {% if loaded_settings and loaded_settings.group_type == 'group_size' %}block{% else %}none{% endif %};">
-                <label for="group-size">Gewünschte Gruppengrösse:</label>
-                <input type="number" name="group_size" id="group-size" min="1" value="{{ loaded_settings.group_size if loaded_settings and loaded_settings.group_size else 3 }}" {% if loaded_settings and loaded_settings.group_type == 'group_size' %}required{% else %}disabled{% endif %}>
+            <div id="group-size-input" style="display:none;">
+                <label for="group-size">Gruppengröße:</label>
+                <input type="number" id="group-size" name="group_size" min="1" value="{{ loaded_settings.get('group_size', 3) if loaded_settings else 3 }}">
             </div>
         </div>
 
-        <hr>
-
-        <div class="form-section">
-            <h3>3. Optionen (optional, später aktivierbar)</h3>
-            <p>Diese Funktionen werden später verfügbar sein. Für den Start konzentrieren wir uns auf die Kernfunktion.</p>
-            <ul>
-                <li>(Optional) Wahl zwischen Modus: Projekt-Teams oder Sport-Teams</li>
-                <li>(Optional) Möglichkeit, aus verschiedenen Sportarten zu wählen</li>
-                <li>(Optional) Eingabe von Ratings pro Teilnehmer/Name</li>
-                <li>(Optional) Eingabe von Rollenbezeichnungen/Tags</li>
-                <li>(Optional) Präferenz auswählen, welche Personen ich sicher in einer Gruppe zusammen haben möchte und welche sicher nicht</li>
-                <li>(Optional) Punktestände eintragen und Personenrating anpassen</li>
-            </ul>
-            <p>Jede dieser optionalen Funktionen wird mit einem Klick modular ein- oder ausgeblendet werden können, wenn sie implementiert sind.</p>
-        </div>
-
-        {# Verstecktes Feld, um die ID der aktuell geladenen PlayerList zu übergeben #}
+        {# Verstecktes Feld für die ID der geladenen PlayerList zu übergeben #}
         {% if selected_player_list_id %}
             <input type="hidden" name="selected_player_list_id" value="{{ selected_player_list_id }}">
         {% endif %}
