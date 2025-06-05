@@ -1,68 +1,149 @@
-{% extends "base.html" %}
+document.addEventListener('DOMContentLoaded', function() {
+    // Grundlegende DOM-Elemente
+    const namesContainer = document.getElementById('names-container');
+    const addNameBtn = document.getElementById('add-name-btn');
+    const savePlayerListForm = document.getElementById('save-player-list-form');
+    const generateGroupsForm = document.getElementById('generate-groups-form');
+    const groupTypeSelect = document.getElementById('group-type');
+    const numGroupsInputDiv = document.getElementById('num-groups-input');
+    const groupSizeInputDiv = document.getElementById('group-size-input');
 
-{% block title %}Meine Namenslisten - Gruppen-Zufallsgenerator{% endblock %}
+    // Funktion zum Hinzufügen eines Namensfeldes
+    function addNameField(nameValue = '') {
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('name-input-wrapper');
 
-{% block content %}
-    <h2>Meine gespeicherten Namenslisten</h2>
+        const newInput = document.createElement('input');
+        newInput.type = 'text';
+        newInput.name = 'name[]';
+        newInput.placeholder = 'Name der Person';
+        newInput.value = nameValue;
+        newInput.required = true;
 
-    {# Flash Messages hier zentral anzeigen (aus base.html übernommen) #}
-    {#
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <ul class="flash-messages">
-                {% for category, message in messages %}
-                    <li class="{{ category }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-    #}
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.classList.add('remove-name-btn');
+        removeBtn.innerHTML = '&times;';
+        removeBtn.addEventListener('click', handleRemoveName);
 
-    {% if user_player_lists %}
-        <div class="player-lists-container">
-            {% for player_list in user_player_lists %}
-                <div class="list-card">
-                    <h3>{{ player_list.name }}</h3>
-                    <p>Erstellt am: {{ player_list.timestamp.strftime('%d.%m.%Y %H:%M') }}</p>
-                    <p>Anzahl Namen: {{ (player_list.players_json | fromjson) | length }}</p>
-                    <div class="list-actions">
-                        {# Link zum Laden der Liste auf der Startseite #}
-                        <a href="{{ url_for('load_player_list', list_id=player_list.id) }}" class="button button-small load-btn">Laden</a>
+        wrapper.appendChild(newInput);
+        wrapper.appendChild(removeBtn);
+        namesContainer.appendChild(wrapper);
 
-                        {# Formular zum Löschen der Liste #}
-                        <form action="{{ url_for('delete_player_list', list_id=player_list.id) }}" method="post" style="display:inline;">
-                            <button type="submit" class="button button-small delete-btn" onclick="return confirm('Bist du sicher, dass du diese Namensliste UND alle zugehörigen Gruppeneinteilungen löschen möchtest?');">Löschen Liste</button>
-                        </form>
-                    </div>
+        newInput.focus();
+        updateSaveButtonState();
+    }
 
-                    <div class="generated-groups-section">
-                        <h4>Gespeicherte Gruppeneinteilungen für "{{ player_list.name }}"</h4>
-                        {% if player_list.generated_groups %}
-                            <ul class="generated-groups-list">
-                                {% for group in player_list.generated_groups | sort(attribute='timestamp', reverse=true) %}
-                                    <li>
-                                        {{ group.name or 'Ohne Namen' }} ({{ group.timestamp.strftime('%d.%m.%Y %H:%M') }})
-                                        <div class="generated-group-actions">
-                                            <a href="{{ url_for('load_generated_group', group_id=group.id) }}" class="button button-x-small load-btn">Laden</a>
-                                            <form action="{{ url_for('delete_generated_group', group_id=group.id) }}" method="post" style="display:inline;">
-                                                <button type="submit" class="button button-x-small delete-btn" onclick="return confirm('Bist du sicher, dass du diese generierte Gruppe löschen möchtest?');">Löschen</button>
-                                            </form>
-                                        </div>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <p>Noch keine Gruppen für diese Liste generiert.</p>
-                        {% endif %}
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <p>Du hast noch keine Namenslisten gespeichert. Generiere jetzt welche auf der <a href="{{ url_for('home') }}">Startseite</a>!</p>
-    {% endif %}
+    // Namensfeld entfernen
+    function handleRemoveName(e) {
+        const wrapper = e.target.closest('.name-input-wrapper');
+        if (namesContainer.querySelectorAll('.name-input-wrapper').length > 1) {
+            wrapper.remove();
+        } else {
+            wrapper.querySelector('input').value = '';
+        }
+        updateSaveButtonState();
+    }
 
-    <div class="actions-container">
-        <a href="{{ url_for('home') }}" class="button">Neue Gruppe erstellen</a>
-    </div>
-{% endblock %}
+    // Save-Button Status aktualisieren
+    function updateSaveButtonState() {
+        const saveBtn = document.querySelector('.save-btn');
+        if (saveBtn) {
+            const hasNames = Array.from(document.querySelectorAll('input[name="name[]"]'))
+                .some(input => input.value.trim() !== '');
+            saveBtn.disabled = !hasNames;
+        }
+    }
+
+    // Gruppenoptionen anzeigen/verstecken
+    function toggleGroupInputs() {
+        if (groupTypeSelect.value === 'num_groups') {
+            numGroupsInputDiv.style.display = 'block';
+            groupSizeInputDiv.style.display = 'none';
+        } else {
+            numGroupsInputDiv.style.display = 'none';
+            groupSizeInputDiv.style.display = 'block';
+        }
+    }
+
+    // Namensliste für das Speichern vorbereiten
+    function preparePlayerListForSave(e) {
+        const names = Array.from(document.querySelectorAll('input[name="name[]"]'))
+            .map(input => input.value.trim())
+            .filter(name => name !== '');
+
+        // Erstelle oder aktualisiere das players_json Feld
+        let jsonField = document.getElementById('players-json-field');
+        if (!jsonField) {
+            jsonField = document.createElement('input');
+            jsonField.type = 'hidden';
+            jsonField.name = 'players_json';
+            jsonField.id = 'players-json-field';
+            e.target.appendChild(jsonField);
+        }
+        jsonField.value = JSON.stringify(names);
+
+        // Verhindere das Absenden wenn keine Namen vorhanden sind
+        if (names.length === 0) {
+            e.preventDefault();
+            alert('Bitte gib mindestens einen Namen ein.');
+        }
+    }
+
+    // Enter-Taste Verhalten
+    function handleEnterKey(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const target = e.target;
+            
+            if (target.matches('input[name="name[]"]')) {
+                const allInputs = Array.from(document.querySelectorAll('input[name="name[]"]'));
+                const currentIndex = allInputs.indexOf(target);
+                const isEmpty = target.value.trim() === '';
+
+                if (currentIndex === allInputs.length - 1 && !isEmpty) {
+                    addNameField();
+                } else if (isEmpty || (currentIndex === allInputs.length - 1 && isEmpty)) {
+                    generateGroupsForm.submit();
+                } else if (currentIndex < allInputs.length - 1 && !isEmpty) {
+                    allInputs[currentIndex + 1].focus();
+                }
+            }
+        }
+    }
+
+    // Event Listener für Delete-Buttons (für dynamisch erstellte Buttons)
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('delete-btn')) {
+            e.target.textContent = 'Liste löschen'; // Sicherstellen dass die Beschriftung stimmt
+        }
+    });
+
+    // Event Listener
+    if (addNameBtn) addNameBtn.addEventListener('click', () => addNameField());
+    if (namesContainer) namesContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-name-btn')) handleRemoveName(e);
+    });
+    if (groupTypeSelect) {
+        groupTypeSelect.addEventListener('change', toggleGroupInputs);
+        toggleGroupInputs(); // Initial aufrufen
+    }
+    if (savePlayerListForm) {
+        savePlayerListForm.addEventListener('submit', preparePlayerListForSave);
+    }
+    if (namesContainer && generateGroupsForm) {
+        namesContainer.addEventListener('keydown', handleEnterKey);
+    }
+
+    // Initialisierung
+    if (namesContainer && namesContainer.querySelectorAll('input[name="name[]"]').length === 0) {
+        addNameField();
+    } else {
+        updateSaveButtonState();
+    }
+
+    // Alle Delete-Buttons initial anpassen
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.textContent = 'Liste löschen';
+    });
+});
