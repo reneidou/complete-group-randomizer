@@ -1,60 +1,52 @@
-/* Dein Original-CSS - KEINE ÄNDERUNGEN HIER, ausser für die neuen Elemente */
-
-/* Allgemeine Body-Einstellungen */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4; /* Hellgrauer Hintergrund */
-    color: #333; /* Dunkler Text */
+    background-color: #f4f4f4;
+    color: #333;
 }
 
-/* Header-Bereich */
 header {
-    background-color: #4CAF50; /* Grün */
-    color: white; /* Weisser Text */
-    padding: 1em 0; /* Oben/Unten 1em Polsterung, Links/Rechts 0 */
-    text-align: center; /* Text zentrieren */
+    background-color: #4CAF50;
+    color: white;
+    padding: 1em 0;
+    text-align: center;
 }
 
-/* Navigation */
 nav ul {
-    list-style-type: none; /* Keine Aufzählungszeichen */
-    padding: 0; /* Keine Standard-Polsterung */
+    list-style-type: none;
+    padding: 0;
 }
 
 nav ul li {
-    display: inline; /* Listelemente nebeneinander anzeigen */
-    margin-right: 20px; /* Abstand zwischen den Links */
+    display: inline;
+    margin-right: 20px;
 }
 
 nav ul li a {
-    color: white; /* Weisser Linktext */
-    text-decoration: none; /* Keine Unterstreichung */
+    color: white;
+    text-decoration: none;
 }
 
-/* Hauptinhaltsbereich */
 main {
-    padding: 20px; /* Innenabstand */
-    max-width: 900px; /* Maximale Breite */
-    margin: 20px auto; /* Oben/Unten 20px, horizontal zentrieren */
-    background-color: white; /* Weisser Hintergrund für den Inhalt */
-    border-radius: 8px; /* Abgerundete Ecken */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Leichter Schatten */
+    padding: 20px;
+    max-width: 900px;
+    margin: 20px auto;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Überschriften */
 h1, h2, h3 {
-    color: #333; /* Dunklerer Text für Überschriften */
+    color: #333;
     text-align: center;
     margin-bottom: 20px;
 }
 
-/* Formular-Layout */
 form {
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Abstand zwischen den Formularabschnitten */
+    gap: 20px;
 }
 
 .form-section {
@@ -65,33 +57,31 @@ form {
 }
 
 .form-section label {
-    display: block; /* Labels über den Inputfeldern */
+    display: block;
     margin-bottom: 8px;
     font-weight: bold;
     color: #555;
 }
 
-/* DEIN ORIGINAL INPUT STYLING - WIRD NICHT GEÄNDERT, AUSSER ES BETRIFFT DEN WRAPPER */
 .form-section input[type="text"],
 .form-section input[type="number"],
 .form-section input[type="password"],
 .form-section select {
-    width: calc(100% - 20px); /* 100% Breite minus Padding */
+    width: calc(100% - 20px);
     padding: 10px;
-    margin-bottom: 15px; /* Dies wird im .name-input-wrapper angepasst */
+    margin-bottom: 15px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    box-sizing: border-box; /* Padding und Border werden in die Breite einbezogen */
+    box-sizing: border-box;
 }
 
 .form-section input[type="checkbox"] {
     margin-right: 10px;
 }
 
-/* DEIN ORIGINAL BUTTON STYLING - WIRD NICHT GEÄNDERT */
 .button, .submit-btn {
     display: inline-block;
-    background-color: #4CAF50; /* Grün */
+    background-color: #4CAF50;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -99,18 +89,18 @@ form {
     cursor: pointer;
     font-size: 1em;
     text-align: center;
-    text-decoration: none; /* Für <a> Tags */
+    text-decoration: none;
     transition: background-color 0.3s ease;
     margin-top: 10px;
 }
 
 .button:hover, .submit-btn:hover {
-    background-color: #45a049; /* Dunkleres Grün beim Hover */
+    background-color: #45a049;
 }
 
 .submit-btn {
-    width: auto; /* Breite anpassen */
-    align-self: center; /* Zentriert den Button im Flex-Container */
+    width: auto;
+    align-self: center;
 }
 
 .button-small {
@@ -123,7 +113,6 @@ form {
     font-size: 0.8em;
 }
 
-/* Link-Stil */
 a {
     color: #4CAF50;
     text-decoration: none;
@@ -133,7 +122,6 @@ a:hover {
     text-decoration: underline;
 }
 
-/* Spezifische Container-Stile */
 .names-container {
     margin-bottom: 20px;
 }
@@ -141,12 +129,11 @@ a:hover {
 .actions-container {
     display: flex;
     justify-content: center;
-    gap: 15px; /* Abstand zwischen Buttons */
+    gap: 15px;
     margin-top: 30px;
-    flex-wrap: wrap; /* Erlaubt Umbruch auf kleineren Bildschirmen */
+    flex-wrap: wrap;
 }
 
-/* Gruppen-Ergebnisse */
 .groups-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -174,14 +161,13 @@ a:hover {
 }
 
 .group-card li {
-    background-color: #e8f5e9; /* Sehr helles Grün */
+    background-color: #e8f5e9;
     padding: 8px;
     margin-bottom: 5px;
     border-radius: 4px;
     border: 1px solid #d0f0d1;
 }
 
-/* Player Lists (my_player_lists.html) */
 .player-lists-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -208,15 +194,15 @@ a:hover {
 .list-actions {
     margin-top: 15px;
     display: flex;
-    flex-wrap: wrap; /* Erlaubt Umbruch auf kleineren Bildschirmen */
-    gap: 10px; /* Abstand zwischen den Buttons */
+    flex-wrap: wrap;
+    gap: 10px;
     justify-content: flex-start;
     align-items: center;
 }
 
 .list-actions .button, .list-actions form button {
-    flex-shrink: 0; /* Verhindert, dass Buttons kleiner werden */
-    margin: 0; /* Setze margin auf 0, da wir gap verwenden */
+    flex-shrink: 0;
+    margin: 0;
 }
 
 .generated-groups-section {
@@ -236,7 +222,7 @@ a:hover {
 }
 
 .generated-groups-section li {
-    background-color: #f0fdf0; /* Noch helleres Grün für generierte Gruppen */
+    background-color: #f0fdf0;
     padding: 8px;
     margin-bottom: 5px;
     border-radius: 4px;
@@ -244,8 +230,8 @@ a:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap; /* Erlaubt Umbruch */
-    gap: 5px; /* Abstand zwischen Name und Buttons */
+    flex-wrap: wrap;
+    gap: 5px;
 }
 
 .generated-group-actions {
@@ -254,63 +240,50 @@ a:hover {
     flex-wrap: wrap;
 }
 
-
-/* NEUE UND PRÄZISE ANGEPASSTE STILE FÜR DIE NEUEN FUNKTIONEN */
-
-/* Container für Inputfeld und Löschen-Button */
 .name-input-wrapper {
-    display: flex; /* Nutzt Flexbox, um Input und Button nebeneinander anzuordnen */
-    align-items: center; /* Zentriert die Elemente vertikal */
-    margin-bottom: 15px; /* Behält den Abstand des ursprünglichen Inputfeldes bei */
-    gap: 5px; /* Kleiner Abstand zwischen Input und Button */
-    /* Füge hier den Padding des .form-section hinzu, wenn nötig, um den Gesamtabstand zu korrigieren */
-    /* z.B. padding-left: 20px; padding-right: 20px; wenn der Wrapper direkt im Formular liegt */
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 5px;
 }
 
-/* Spezifische Anpassung für das Inputfeld innerhalb des Wrappers */
 .name-input-wrapper input[type="text"] {
-    flex-grow: 1; /* Lässt das Input-Feld den verfügbaren Platz einnehmen */
-    width: auto; /* Überschreibt die 100% Breite des ursprünglichen CSS, damit flex-grow greifen kann */
-    /* Die anderen Eigenschaften (padding, border, border-radius, box-sizing)
-       kommen bereits von .form-section input[type="text"] und sollten passen.
-       Nur margin-bottom wird hier auf 0 gesetzt, da der Wrapper den Abstand regelt. */
-    margin-bottom: 0; /* Wichtig: Entfernt den margin-bottom vom Inputfeld selbst, da der Wrapper ihn hat */
+    flex-grow: 1;
+    width: auto;
+    margin-bottom: 0;
 }
 
 .remove-name-btn {
-    /* BASIEREND AUF DEINEM .button-x-small STIL, aber für eine runde Form */
-    background-color: #cccccc; /* Grau, wie dein ursprünglicher Löschen-Button */
-    color: #333; /* Dunkler Text für das 'x' */
+    background-color: #cccccc;
+    color: #333;
     border: none;
-    border-radius: 50%; /* Macht den Button rund */
-    padding: 0; /* Padding auf 0 setzen, da wir feste Höhe/Breite für die Form haben */
-    width: 30px; /* Feste Breite für die runde Form */
-    height: 30px; /* Feste Höhe für die runde Form - passend zum Inputfeld */
-    display: flex; /* Für Zentrierung des 'x' */
+    border-radius: 50%;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    font-weight: bold; /* Macht das 'x' fett */
-    font-size: 1.2em; /* Grösse des 'x' anpassen */
-    line-height: 1; /* Für bessere vertikale Zentrierung */
-    flex-shrink: 0; /* Verhindert, dass der Button schrumpft */
-    box-sizing: border-box; /* Bezieht padding und border in width/height ein */
+    font-weight: bold;
+    font-size: 1.2em;
+    line-height: 1;
+    flex-shrink: 0;
+    box-sizing: border-box;
     transition: background-color 0.3s ease;
-    margin-bottom: 0; /* Keine zusätzliche Marge, da der Wrapper dies handhabt */
+    margin-bottom: 0;
 }
 
 .remove-name-btn:hover {
-    background-color: #b3b3b3; /* Etwas dunkleres Grau beim Hover */
+    background-color: #b3b3b3;
 }
 
-/* Stil für den "Namensliste speichern" Button, wenn er deaktiviert ist */
 .save-btn:disabled {
-    background-color: #cccccc; /* Grau */
+    background-color: #cccccc;
     cursor: not-allowed;
     opacity: 0.7;
 }
 
-/* Stil für Flash Messages (basierend auf deinem ursprünglichen CSS) */
 .flash-messages {
     list-style: none;
     padding: 0;
@@ -343,9 +316,9 @@ a:hover {
 }
 
 .info-message {
-    background-color: #e0f7fa; /* Light cyan */
-    border: 1px solid #b2ebf2; /* Cyan border */
-    color: #00838f; /* Dark cyan text */
+    background-color: #e0f7fa;
+    border: 1px solid #b2ebf2;
+    color: #00838f;
     padding: 10px 15px;
     border-radius: 5px;
     margin-bottom: 15px;

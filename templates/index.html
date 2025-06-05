@@ -4,15 +4,13 @@
 
 {% block content %}
     <h2>Willkommen beim Gruppen-Zufallsgenerator!</h2>
-    <p>Erstelle schnell und einfach Gruppen für dein Projekt, dein Training oder dein Team. Egal ob Sport oder Projekte, hier bist du richtig.</p>
+    <p>Erstelle schnell und einfach Gruppen für dein Projekt, dein Training oder dein Team.</p>
 
-    {# Formular zur Generierung von Gruppen #}
     <form action="{{ url_for('generate_groups') }}" method="post" id="generate-groups-form">
         <div class="form-section">
             <h3>1. Namen der Teilnehmer eingeben</h3>
             <p>Gib die Namen der Personen ein, die du in Gruppen aufteilen möchtest.</p>
             <div id="names-container">
-                {# Felder für Namen dynamisch generieren oder mit geladenen Namen füllen #}
                 {% if loaded_names %}
                     {% for name in loaded_names %}
                         <div class="name-input-wrapper">
@@ -20,8 +18,6 @@
                             <button type="button" class="remove-name-btn" aria-label="Namenfeld entfernen">&times;</button>
                         </div>
                     {% endfor %}
-                {% else %}
-                    {# Standard-Eingabefelder, wenn keine Namen geladen wurden. Das JS fügt ein Feld hinzu, wenn es leer ist. #}
                 {% endif %}
             </div>
             <button type="button" id="add-name-btn" class="button">Weiteren Namen hinzufügen</button>
@@ -46,7 +42,6 @@
             </div>
         </div>
 
-        {# Verstecktes Feld für die ID der geladenen PlayerList zu übergeben #}
         {% if selected_player_list_id %}
             <input type="hidden" name="selected_player_list_id" value="{{ selected_player_list_id }}">
         {% endif %}
@@ -54,16 +49,13 @@
         <button type="submit" class="submit-btn">Gruppen generieren</button>
     </form>
 
-    {% if g.user %} {# Nur anzeigen, wenn ein Benutzer angemeldet ist #}
+    {% if g.user %}
         <hr>
         <h3>Namensliste speichern</h3>
         <p>Speichere die aktuelle Liste der Namen, um sie später wiederzuverwenden.</p>
         <form action="{{ url_for('save_player_list') }}" method="post" id="save-player-list-form">
             <input type="text" name="list_name" placeholder="Name der Namensliste (z.B. 'Klasse A')" required>
-            {# Die Namenfelder werden dynamisch vom JavaScript in dieses Formular kopiert #}
-            <div id="names-for-saving-container" style="display: none;">
-                {# JavaScript wird hier die Namenfelder einfügen #}
-            </div>
+            <div id="names-for-saving-container" style="display: none;"></div>
             {% if selected_player_list_id %}
                 <input type="hidden" name="selected_player_list_id_for_update" value="{{ selected_player_list_id }}">
             {% endif %}

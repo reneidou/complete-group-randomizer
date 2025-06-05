@@ -25,28 +25,22 @@
     <div class="actions-container">
         <a href="{{ url_for('home') }}" class="button">Neue Gruppen erstellen</a>
 
-        {% if g.user %} {# Nur anzeigen, wenn ein Benutzer angemeldet ist #}
+        {% if g.user %}
             <hr>
             <h3>Gruppeneinteilung speichern</h3>
             <p>Gib einen Namen für diese Gruppeneinteilung ein, um sie zu speichern.</p>
             <form action="{{ url_for('save_generated_group') }}" method="post">
                 <input type="text" name="group_name" placeholder="Name der Gruppeneinteilung (z.B. 'Training 2025 - Runde 1')" required>
-
-                {# Verstecktes Feld für die ID der PlayerList, falls eine geladen war #}
-                {% if session.get('selected_player_list_id_for_save') %}
-                    <input type="hidden" name="player_list_id" value="{{ session.get('selected_player_list_id_for_save') }}">
-                {% else %}
-                    <p class="info-message">Keine Namensliste aktiv. Um diese Gruppeneinteilung zu speichern, musst du zuerst eine <a href="{{ url_for('home') }}">Namensliste laden oder eine neue erstellen und speichern</a>.</p>
-                    {# Wenn keine player_list_id vorhanden ist, sollte der Save-Button deaktiviert sein oder die Form nicht angezeigt werden #}
-                    <button type="submit" class="button submit-btn save-btn" disabled>Gruppeneinteilung speichern</button>
-                {% endif %}
-
-                {# Versteckte Felder zum Übergeben der Daten - JETZT OHNE |tojson #}
+                <input type="hidden" name="groups_json" value="{{ groups | tojson }}">
                 <input type="hidden" name="all_names_json" value="{{ all_names_json }}">
                 <input type="hidden" name="group_settings_json" value="{{ group_settings_json }}">
 
                 {% if session.get('selected_player_list_id_for_save') %}
+                    <input type="hidden" name="player_list_id" value="{{ session.get('selected_player_list_id_for_save') }}">
                     <button type="submit" class="button submit-btn save-btn">Gruppeneinteilung speichern</button>
+                {% else %}
+                    <p class="info-message">Keine Namensliste aktiv. Um diese Gruppeneinteilung zu speichern, musst du zuerst eine <a href="{{ url_for('home') }}">Namensliste laden oder eine neue erstellen und speichern</a>.</p>
+                    <button type="submit" class="button submit-btn save-btn" disabled>Gruppeneinteilung speichern</button>
                 {% endif %}
             </form>
         {% else %}

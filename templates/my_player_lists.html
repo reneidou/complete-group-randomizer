@@ -1,149 +1,52 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Grundlegende DOM-Elemente
-    const namesContainer = document.getElementById('names-container');
-    const addNameBtn = document.getElementById('add-name-btn');
-    const savePlayerListForm = document.getElementById('save-player-list-form');
-    const generateGroupsForm = document.getElementById('generate-groups-form');
-    const groupTypeSelect = document.getElementById('group-type');
-    const numGroupsInputDiv = document.getElementById('num-groups-input');
-    const groupSizeInputDiv = document.getElementById('group-size-input');
+{% extends "base.html" %}
 
-    // Funktion zum Hinzufügen eines Namensfeldes
-    function addNameField(nameValue = '') {
-        const wrapper = document.createElement('div');
-        wrapper.classList.add('name-input-wrapper');
+{% block title %}Meine Namenslisten - Gruppen-Zufallsgenerator{% endblock %}
 
-        const newInput = document.createElement('input');
-        newInput.type = 'text';
-        newInput.name = 'name[]';
-        newInput.placeholder = 'Name der Person';
-        newInput.value = nameValue;
-        newInput.required = true;
-
-        const removeBtn = document.createElement('button');
-        removeBtn.type = 'button';
-        removeBtn.classList.add('remove-name-btn');
-        removeBtn.innerHTML = '&times;';
-        removeBtn.addEventListener('click', handleRemoveName);
-
-        wrapper.appendChild(newInput);
-        wrapper.appendChild(removeBtn);
-        namesContainer.appendChild(wrapper);
-
-        newInput.focus();
-        updateSaveButtonState();
-    }
-
-    // Namensfeld entfernen
-    function handleRemoveName(e) {
-        const wrapper = e.target.closest('.name-input-wrapper');
-        if (namesContainer.querySelectorAll('.name-input-wrapper').length > 1) {
-            wrapper.remove();
-        } else {
-            wrapper.querySelector('input').value = '';
-        }
-        updateSaveButtonState();
-    }
-
-    // Save-Button Status aktualisieren
-    function updateSaveButtonState() {
-        const saveBtn = document.querySelector('.save-btn');
-        if (saveBtn) {
-            const hasNames = Array.from(document.querySelectorAll('input[name="name[]"]'))
-                .some(input => input.value.trim() !== '');
-            saveBtn.disabled = !hasNames;
-        }
-    }
-
-    // Gruppenoptionen anzeigen/verstecken
-    function toggleGroupInputs() {
-        if (groupTypeSelect.value === 'num_groups') {
-            numGroupsInputDiv.style.display = 'block';
-            groupSizeInputDiv.style.display = 'none';
-        } else {
-            numGroupsInputDiv.style.display = 'none';
-            groupSizeInputDiv.style.display = 'block';
-        }
-    }
-
-    // Namensliste für das Speichern vorbereiten
-    function preparePlayerListForSave(e) {
-        const names = Array.from(document.querySelectorAll('input[name="name[]"]'))
-            .map(input => input.value.trim())
-            .filter(name => name !== '');
-
-        // Erstelle oder aktualisiere das players_json Feld
-        let jsonField = document.getElementById('players-json-field');
-        if (!jsonField) {
-            jsonField = document.createElement('input');
-            jsonField.type = 'hidden';
-            jsonField.name = 'players_json';
-            jsonField.id = 'players-json-field';
-            e.target.appendChild(jsonField);
-        }
-        jsonField.value = JSON.stringify(names);
-
-        // Verhindere das Absenden wenn keine Namen vorhanden sind
-        if (names.length === 0) {
-            e.preventDefault();
-            alert('Bitte gib mindestens einen Namen ein.');
-        }
-    }
-
-    // Enter-Taste Verhalten
-    function handleEnterKey(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const target = e.target;
-            
-            if (target.matches('input[name="name[]"]')) {
-                const allInputs = Array.from(document.querySelectorAll('input[name="name[]"]'));
-                const currentIndex = allInputs.indexOf(target);
-                const isEmpty = target.value.trim() === '';
-
-                if (currentIndex === allInputs.length - 1 && !isEmpty) {
-                    addNameField();
-                } else if (isEmpty || (currentIndex === allInputs.length - 1 && isEmpty)) {
-                    generateGroupsForm.submit();
-                } else if (currentIndex < allInputs.length - 1 && !isEmpty) {
-                    allInputs[currentIndex + 1].focus();
-                }
-            }
-        }
-    }
-
-    // Event Listener für Delete-Buttons (für dynamisch erstellte Buttons)
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('delete-btn')) {
-            e.target.textContent = 'Liste löschen'; // Sicherstellen dass die Beschriftung stimmt
-        }
-    });
-
-    // Event Listener
-    if (addNameBtn) addNameBtn.addEventListener('click', () => addNameField());
-    if (namesContainer) namesContainer.addEventListener('click', (e) => {
-        if (e.target.classList.contains('remove-name-btn')) handleRemoveName(e);
-    });
-    if (groupTypeSelect) {
-        groupTypeSelect.addEventListener('change', toggleGroupInputs);
-        toggleGroupInputs(); // Initial aufrufen
-    }
-    if (savePlayerListForm) {
-        savePlayerListForm.addEventListener('submit', preparePlayerListForSave);
-    }
-    if (namesContainer && generateGroupsForm) {
-        namesContainer.addEventListener('keydown', handleEnterKey);
-    }
-
-    // Initialisierung
-    if (namesContainer && namesContainer.querySelectorAll('input[name="name[]"]').length === 0) {
-        addNameField();
-    } else {
-        updateSaveButtonState();
-    }
-
-    // Alle Delete-Buttons initial anpassen
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.textContent = 'Liste löschen';
-    });
-});
+{% block content %}
+    <h2>Meine Namenslisten</h2>
+    
+    {% if user_player_lists %}
+        <div class="player-lists-container">
+            {% for player_list in user_player_lists %}
+                <div class="list-card">
+                    <h3>{{ player_list.name }}</h3>
+                    <p>Erstellt am: {{ player_list.timestamp.strftime('%d.%m.%Y %H:%M') }}</p>
+                    
+                    <div class="list-actions">
+                        <a href="{{ url_for('load_player_list', list_id=player_list.id) }}" class="button button-small">Laden</a>
+                        <form action="{{ url_for('delete_player_list', list_id=player_list.id) }}" method="post">
+                            <button type="submit" class="button button-small delete-btn">Löschen</button>
+                        </form>
+                    </div>
+                    
+                    {% if player_list.generated_groups %}
+                        <div class="generated-groups-section">
+                            <h4>Gespeicherte Gruppeneinteilungen:</h4>
+                            <ul>
+                                {% for group in player_list.generated_groups %}
+                                    <li>
+                                        {{ group.name or "Ohne Namen" }} ({{ group.timestamp.strftime('%d.%m.%Y %H:%M') }})
+                                        <div class="generated-group-actions">
+                                            <a href="{{ url_for('load_generated_group', group_id=group.id) }}" class="button button-x-small">Laden</a>
+                                            <form action="{{ url_for('delete_generated_group', group_id=group.id) }}" method="post">
+                                                <button type="submit" class="button button-x-small">Löschen</button>
+                                            </form>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% else %}
+                        <p>Keine gespeicherten Gruppeneinteilungen.</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Du hast noch keine Namenslisten gespeichert.</p>
+    {% endif %}
+    
+    <div class="actions-container">
+        <a href="{{ url_for('home') }}" class="button">Zurück zur Startseite</a>
+    </div>
+{% endblock %}
