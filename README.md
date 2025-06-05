@@ -46,6 +46,26 @@ Der Zufallsgenerator bietet die folgenden Hauptfunktionen:
 
 ---
 
+## Geplante Funktionen
+
+### Erweiterte Gruppenoptionen (in Entwicklung)
+- 🔜 **Modus-Auswahl:** Projekt-Teams, Sport-Teams oder Standard-Modus
+- 🔜 **Sportarten-Auswahl:** Spezifische Einstellungen für verschiedene Sportarten
+- 🔜 **Individuelle Ratings:** Bewertungssystem mit flexibler Skala (z.B. 1-5, 0-50, -10-30)
+- 🔜 **Rollen/Tags:** Definition von Positionen (z.B. "Verteidiger", "Zuspieler")
+- 🔜 **Rollenverteilung:** Automatische Verteilung nach definierten Rollen
+- 🔜 **Präferenzmanagement:** Festlegen von "müssen zusammen" und "dürfen nicht zusammen"
+- 🔜 **Konfliktlösung:** Intelligente Vorschläge bei nicht erfüllbaren Präferenzen
+
+### Erweiterte Ergebnisbearbeitung (in Entwicklung)
+- 🔜 **Drag & Drop:** Manuelles Anpassen der Gruppenzusammensetzung
+- 🔜 **Undo/Redo:** Rückgängig machen von Änderungen
+- 🔜 **Rating-Anzeige:** Einblenden von Einzel- und Gruppenbewertungen
+- 🔜 **Ergebnis teilen:** Generierung von Teilen-Links und QR-Codes
+- 🔜 **Dynamische Anpassung:** Automatische Rating-Änderung basierend auf Spielergebnissen
+
+---
+
 ## Monetarisierung
 
 Das Projekt ist darauf ausgelegt, über **PythonAnywhere** veröffentlicht und monetarisiert zu werden. Dies kann durch Werbeanzeigen auf der Plattform oder durch Premium-Funktionen für registrierte Benutzer (z.B. erweiterter Speicherplatz, detailliertere Statistiken, werbefreie Nutzung) geschehen.
@@ -83,7 +103,7 @@ python app.py
 7. Im Browser öffnen: `http://127.0.0.1:5000`
 
 ### PythonAnywhere Deployment
-1. Konto auf pythonanywhere.com erstellen
+1. Konto auf [pythonanywhere.com](pythonanywhere.com) erstellen
 2. Neue Web-App erstellen (Flask)
 3. Git-Repository klonen
 4. Virtuelle Umgebung einrichten
@@ -91,13 +111,19 @@ python app.py
 6. Datenbank initialisieren
 7. App konfigurieren und starten
 
+---
+
 ## Beitrag leisten
 Vorschläge und Verbesserungen sind willkommen! Bitte eröffne ein Issue oder sende einen Pull Request.
 
 **Wichtiger Hinweis:** Dieses Repository ist öffentlich. Änderungen dürfen vorgeschlagen werden, aber der Code darf ohne meine Zustimmung ausserhalb der Weiterentwicklung nicht veröffentlicht oder kommerziell genutzt werden.
 
+---
+
 ## Lizenz
 [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
+---
 
 ## Kontakt
 reneidou - [GitHub Profil](https://github.com/reneidou)

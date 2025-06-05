@@ -64,4 +64,20 @@
     {% else %}
         <p>Möchtest du deine Namenslisten speichern? <a href="{{ url_for('login') }}">Melde dich an</a> oder <a href="{{ url_for('register') }}">registriere dich</a>!</p>
     {% endif %}
+
+        <div class="form-section">
+        <h3>Geplante Erweiterungen</h3>
+        <p>Diese App wird kontinuierlich erweitert. In zukünftigen Updates werden folgende Funktionen hinzugefügt:</p>
+        <ul>
+            <li>🔜 <strong>Modus-Auswahl:</strong> Projekt-Teams, Sport-Teams oder Standard-Modus</li>
+            <li>🔜 <strong>Sportarten-spezifische Einstellungen</strong> für präzise Gruppeneinteilungen</li>
+            <li>🔜 <strong>Individuelle Bewertungen:</strong> Flexible Rating-Systeme für Teilnehmer</li>
+            <li>🔜 <strong>Rollen & Positionen:</strong> Definition und Verteilung von spezifischen Rollen</li>
+            <li>🔜 <strong>Team-Präferenzen:</strong> Festlegen wer zusammen oder getrennt sein soll</li>
+            <li>🔜 <strong>Drag & Drop Bearbeitung:</strong> Manuelles Anpassen der Gruppenergebnisse</li>
+            <li>🔜 <strong>Ergebnis teilen:</strong> Einfaches Teilen via Link oder QR-Code</li>
+        </ul>
+        <p>Details zu den geplanten Funktionen findest du in der <a href="https://github.com/reneidou/complete-group-randomizer/tree/create-functional-basis-version" target="_blank">Projekt-README</a>.</p>
+    </div>
+
 {% endblock %}
