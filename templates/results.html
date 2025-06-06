@@ -4,47 +4,169 @@
 
 {% block content %}
     <h2>Deine generierten Gruppen:</h2>
+    
+    <div class="result-controls">
+        <button id="toggle-ratings" class="button button-small">Bewertungen anzeigen</button>
+        <button id="share-results" class="button button-small">Ergebnisse teilen</button>
+        <div id="share-link" style="display: none; margin-top: 10px;"></div>
+    </div>
 
-    <div class="groups-container">
-        {% if groups %}
-            {% for group in groups %}
-                <div class="group-card">
-                    <h3>Gruppe {{ loop.index }}</h3>
-                    <ul>
-                        {% for person in group %}
-                            <li>{{ person }}</li>
-                        {% endfor %}
-                    </ul>
+    <div class="groups-container" id="groups-container">
+        {% for group in groups %}
+            <div class="group-card" data-group-index="{{ loop.index0 }}">
+                <h3>Gruppe {{ loop.index }} 
+                    <span class="group-rating" style="display: none;">
+                        ({{ group_ratings[loop.index0]|round(2) }})
+                    </span>
+                </h3>
+                <ul>
+                    {% for person in group %}
+                        <li class="draggable" draggable="true" data-player-name="{{ person }}">
+                            {{ person }}
+                            <span class="player-rating" style="display: none;">
+                                ({{ ratings[person]|default(0)|round(2) }})
+                            </span>
+                            {% if roles[person] %}
+                                <span class="player-role">[{{ roles[person] }}]</span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                
+                <div class="group-score">
+                    <label>Punkte:</label>
+                    <input type="number" class="group-score-input" min="0" step="0.1" value="0">
+                    <button class="button-x-small save-score">Speichern</button>
                 </div>
-            {% endfor %}
-        {% else %}
-            <p>Es konnten keine Gruppen generiert werden. Bitte überprüfe deine Eingaben.</p>
-        {% endif %}
+            </div>
+        {% endfor %}
     </div>
-
+    
     <div class="actions-container">
+        <button id="undo-btn" class="button" disabled>Rückgängig</button>
+        <button id="redo-btn" class="button" disabled>Wiederherstellen</button>
+        <button id="recalculate-btn" class="button">Neu berechnen</button>
         <a href="{{ url_for('home') }}" class="button">Neue Gruppen erstellen</a>
-
-        {% if g.user %}
-            <hr>
-            <h3>Gruppeneinteilung speichern</h3>
-            <p>Gib einen Namen für diese Gruppeneinteilung ein, um sie zu speichern.</p>
-            <form action="{{ url_for('save_generated_group') }}" method="post">
-                <input type="text" name="group_name" placeholder="Name der Gruppeneinteilung (z.B. 'Training 2025 - Runde 1')" required>
-                <input type="hidden" name="groups_json" value="{{ groups | tojson }}">
-                <input type="hidden" name="all_names_json" value="{{ all_names_json }}">
-                <input type="hidden" name="group_settings_json" value="{{ group_settings_json }}">
-
-                {% if session.get('selected_player_list_id_for_save') %}
-                    <input type="hidden" name="player_list_id" value="{{ session.get('selected_player_list_id_for_save') }}">
-                    <button type="submit" class="button submit-btn save-btn">Gruppeneinteilung speichern</button>
-                {% else %}
-                    <p class="info-message">Keine Namensliste aktiv. Um diese Gruppeneinteilung zu speichern, musst du zuerst eine <a href="{{ url_for('home') }}">Namensliste laden oder eine neue erstellen und speichern</a>.</p>
-                    <button type="submit" class="button submit-btn save-btn" disabled>Gruppeneinteilung speichern</button>
-                {% endif %}
-            </form>
-        {% else %}
-            <p>Möchtest du diese Konfiguration speichern? <a href="{{ url_for('login') }}">Melde dich an</a> oder <a href="{{ url_for('register') }}">registriere dich</a>!</p>
-        {% endif %}
     </div>
+
+    <!-- ... Speicherfunktionen ... -->
+    
+    <script>
+        // Drag & Drop Implementierung
+        const draggables = document.querySelectorAll('.draggable');
+        const groups = document.querySelectorAll('.group-card');
+        const history = [];
+        let currentState = -1;
+        
+        draggables.forEach(draggable => {
+            draggable.addEventListener('dragstart', () => {
+                draggable.classList.add('dragging');
+            });
+            
+            draggable.addEventListener('dragend', () => {
+                draggable.classList.remove('dragging');
+                saveState();
+            });
+        });
+        
+        groups.forEach(group => {
+            group.addEventListener('dragover', e => {
+                e.preventDefault();
+                const afterElement = getDragAfterElement(group, e.clientY);
+                const draggable = document.querySelector('.dragging');
+                if (afterElement) {
+                    group.querySelector('ul').insertBefore(draggable, afterElement);
+                } else {
+                    group.querySelector('ul').appendChild(draggable);
+                }
+            });
+        });
+        
+        function getDragAfterElement(container, y) {
+            // ... Logik zur Bestimmung der Einfügeposition ...
+        }
+        
+        function saveState() {
+            // ... Logik zum Speichern des aktuellen Zustands für Undo/Redo ...
+        }
+        
+        // Undo/Redo Funktionen
+        document.getElementById('undo-btn').addEventListener('click', () => {
+            if (currentState > 0) {
+                currentState--;
+                restoreState(currentState);
+            }
+        });
+        
+        document.getElementById('redo-btn').addEventListener('click', () => {
+            if (currentState < history.length - 1) {
+                currentState++;
+                restoreState(currentState);
+            }
+        });
+        
+        // Bewertungen ein-/ausblenden
+        document.getElementById('toggle-ratings').addEventListener('click', () => {
+            const ratings = document.querySelectorAll('.player-rating, .group-rating');
+            ratings.forEach(rating => {
+                rating.style.display = rating.style.display === 'none' ? 'inline' : 'none';
+            });
+        });
+        
+        // Ergebnisse teilen
+        document.getElementById('share-results').addEventListener('click', () => {
+            const shareLink = document.getElementById('share-link');
+            const link = `${window.location.origin}/share/${generateShareId()}`;
+            
+            shareLink.innerHTML = `
+                <p>Teile diesen Link: <a href="${link}" target="_blank">${link}</a></p>
+                <div id="qrcode" style="margin-top: 10px;"></div>
+            `;
+            
+            shareLink.style.display = 'block';
+            
+            // QR-Code generieren
+            new QRCode(document.getElementById('qrcode'), {
+                text: link,
+                width: 128,
+                height: 128
+            });
+        });
+        
+        // Punkte speichern und Ratings anpassen
+        document.querySelectorAll('.save-score').forEach(button => {
+            button.addEventListener('click', function() {
+                const groupCard = this.closest('.group-card');
+                const groupIndex = groupCard.dataset.groupIndex;
+                const score = groupCard.querySelector('.group-score-input').value;
+                
+                // AJAX-Anfrage zum Speichern der Punkte
+                fetch('/save_group_score', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        group_id: "{{ generated_group_id }}",
+                        group_index: groupIndex,
+                        score: parseFloat(score)
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Bewertungen aktualisieren
+                        data.updated_ratings.forEach(player => {
+                            const ratingElement = document.querySelector(`[data-player-name="${player.name}"] .player-rating`);
+                            if (ratingElement) {
+                                ratingElement.textContent = `(${player.new_rating.toFixed(2)})`;
+                            }
+                        });
+                        
+                        alert('Punkte erfolgreich gespeichert und Bewertungen aktualisiert!');
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}

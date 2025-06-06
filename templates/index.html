@@ -4,80 +4,150 @@
 
 {% block content %}
     <h2>Willkommen beim Gruppen-Zufallsgenerator!</h2>
-    <p>Erstelle schnell und einfach Gruppen für dein Projekt, dein Training oder dein Team.</p>
-
-    <form action="{{ url_for('generate_groups') }}" method="post" id="generate-groups-form">
-        <div class="form-section">
-            <h3>1. Namen der Teilnehmer eingeben</h3>
-            <p>Gib die Namen der Personen ein, die du in Gruppen aufteilen möchtest.</p>
-            <div id="names-container">
-                {% if loaded_names %}
-                    {% for name in loaded_names %}
-                        <div class="name-input-wrapper">
-                            <input type="text" name="name[]" placeholder="Name der Person" value="{{ name }}" required>
-                            <button type="button" class="remove-name-btn" aria-label="Namenfeld entfernen">&times;</button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            </div>
-            <button type="button" id="add-name-btn" class="button">Weiteren Namen hinzufügen</button>
+    
+    <!-- Modus-Auswahl -->
+    <div class="form-section">
+        <h3>1. Modus wählen</h3>
+        <div class="mode-selection">
+            <label>
+                <input type="radio" name="mode" value="standard" checked>
+                <span>Standard</span>
+            </label>
+            <label>
+                <input type="radio" name="mode" value="project">
+                <span>Projekt-Teams</span>
+            </label>
+            <label>
+                <input type="radio" name="mode" value="sport">
+                <span>Sport-Teams</span>
+            </label>
         </div>
-
-        <div class="form-section">
-            <h3>2. Gruppeneinteilung festlegen</h3>
-            <label for="group-type">Wie möchtest du die Gruppen einteilen?</label>
-            <select id="group-type" name="group_type">
-                <option value="num_groups" {% if loaded_settings and loaded_settings.get('group_type') == 'num_groups' %}selected{% endif %}>Anzahl Gruppen</option>
-                <option value="group_size" {% if loaded_settings and loaded_settings.get('group_type') == 'group_size' %}selected{% endif %}>Gruppengröße</option>
+        
+        <div id="sport-selection" style="display: none;">
+            <label for="sport">Sportart:</label>
+            <select id="sport" name="sport">
+                <option value="fussball">Fussball</option>
+                <option value="basketball">Basketball</option>
+                <option value="volleyball">Volleyball</option>
+                <option value="handball">Handball</option>
+                <option value="hockey">Hockey</option>
+                <option value="other">Andere</option>
             </select>
-
-            <div id="num-groups-input" style="display:none;">
-                <label for="num-groups">Anzahl der Gruppen:</label>
-                <input type="number" id="num-groups" name="num_groups" min="1" value="{{ loaded_settings.get('num_groups', 2) if loaded_settings else 2 }}">
+        </div>
+    </div>
+    
+    <!-- Namen eingeben -->
+    <div class="form-section">
+        <h3>2. Namen der Teilnehmer eingeben</h3>
+        <div id="names-container">
+            <!-- Dynamisch generierte Namensfelder -->
+        </div>
+        <button type="button" id="add-name-btn" class="button">Weiteren Namen hinzufügen</button>
+    </div>
+    
+    <!-- Erweiterte Optionen (modular) -->
+    <div class="form-section">
+        <h3>
+            <button type="button" id="toggle-advanced" class="button button-small">
+                Erweiterte Optionen anzeigen
+            </button>
+        </h3>
+        
+        <div id="advanced-options" style="display: none;">
+            <!-- Ratings -->
+            <div class="advanced-section">
+                <h4>Bewertungen</h4>
+                <p>Bewertungsspanne: 
+                    <input type="number" id="min-rating" value="1" min="-100" max="100" style="width: 60px;">
+                    bis 
+                    <input type="number" id="max-rating" value="5" min="-100" max="100" style="width: 60px;">
+                    <select id="rating-direction" style="margin-left: 10px;">
+                        <option value="1">Höher = besser</option>
+                        <option value="-1">Niedriger = besser</option>
+                    </select>
+                </p>
+                <div id="rating-container"></div>
             </div>
-
-            <div id="group-size-input" style="display:none;">
-                <label for="group-size">Gruppengröße:</label>
-                <input type="number" id="group-size" name="group_size" min="1" value="{{ loaded_settings.get('group_size', 3) if loaded_settings else 3 }}">
+            
+            <!-- Rollen/Tags -->
+            <div class="advanced-section">
+                <h4>Rollen/Tags</h4>
+                <div id="roles-container">
+                    <div class="role-entry">
+                        <input type="text" placeholder="Rollenname (z.B. Verteidiger)" class="role-name">
+                        <input type="number" placeholder="Min" min="0" class="role-min" style="width: 60px;">
+                        <input type="number" placeholder="Max" min="0" class="role-max" style="width: 60px;">
+                        <button type="button" class="button-x-small remove-role">&times;</button>
+                    </div>
+                </div>
+                <button type="button" id="add-role-btn" class="button button-small">Weitere Rolle hinzufügen</button>
+                
+                <div id="role-assignment-container" style="margin-top: 15px;"></div>
+            </div>
+            
+            <!-- Präferenzen -->
+            <div class="advanced-section">
+                <h4>Präferenzen</h4>
+                <div id="preferences-container">
+                    <div class="preference-entry">
+                        <select class="preference-player">
+                            <option value="">Spieler wählen</option>
+                        </select>
+                        <select class="preference-type">
+                            <option value="must">muss mit</option>
+                            <option value="avoid">darf nicht mit</option>
+                        </select>
+                        <select class="preference-target">
+                            <option value="">Zielspieler wählen</option>
+                        </select>
+                        <button type="button" class="button-x-small remove-preference">&times;</button>
+                    </div>
+                </div>
+                <button type="button" id="add-preference-btn" class="button button-small">Weitere Präferenz hinzufügen</button>
             </div>
         </div>
+    </div>
+    
+    <!-- Gruppeneinstellungen -->
+    <div class="form-section">
+        <h3>3. Gruppeneinteilung festlegen</h3>
+        <label for="group-type">Wie möchtest du die Gruppen einteilen?</label>
+        <select id="group-type" name="group_type">
+            <option value="num_groups">Anzahl Gruppen</option>
+            <option value="group_size">Gruppengröße</option>
+        </select>
 
-        {% if selected_player_list_id %}
-            <input type="hidden" name="selected_player_list_id" value="{{ selected_player_list_id }}">
-        {% endif %}
+        <div id="num-groups-input" style="display:none;">
+            <label for="num-groups">Anzahl der Gruppen:</label>
+            <input type="number" id="num-groups" name="num_groups" min="1" value="2">
+        </div>
 
-        <button type="submit" class="submit-btn">Gruppen generieren</button>
-    </form>
-
-    {% if g.user %}
-        <hr>
-        <h3>Namensliste speichern</h3>
-        <p>Speichere die aktuelle Liste der Namen, um sie später wiederzuverwenden.</p>
-        <form action="{{ url_for('save_player_list') }}" method="post" id="save-player-list-form">
-            <input type="text" name="list_name" placeholder="Name der Namensliste (z.B. 'Klasse A')" required>
-            <div id="names-for-saving-container" style="display: none;"></div>
-            {% if selected_player_list_id %}
-                <input type="hidden" name="selected_player_list_id_for_update" value="{{ selected_player_list_id }}">
-            {% endif %}
-            <button type="submit" class="button submit-btn save-btn">Namensliste speichern</button>
-        </form>
-    {% else %}
-        <p>Möchtest du deine Namenslisten speichern? <a href="{{ url_for('login') }}">Melde dich an</a> oder <a href="{{ url_for('register') }}">registriere dich</a>!</p>
+        <div id="group-size-input" style="display:none;">
+            <label for="group-size">Gruppengröße:</label>
+            <input type="number" id="group-size" name="group_size" min="1" value="3">
+        </div>
+    </div>
+    
+    <!-- Geplante Funktionen -->
+    <div class="form-section">
+        <h3>Neu: Erweiterte Funktionen</h3>
+        <p>Diese App wurde um folgende Funktionen erweitert:</p>
+        <ul>
+            <li>✅ <strong>Modus-Auswahl:</strong> Projekt-Teams, Sport-Teams oder Standard-Modus</li>
+            <li>✅ <strong>Sportarten-spezifische Einstellungen</strong> für präzise Gruppeneinteilungen</li>
+            <li>✅ <strong>Individuelle Bewertungen:</strong> Flexible Rating-Systeme für Teilnehmer</li>
+            <li>✅ <strong>Rollen & Positionen:</strong> Definition und Verteilung von spezifischen Rollen</li>
+            <li>✅ <strong>Team-Präferenzen:</strong> Festlegen wer zusammen oder getrennt sein soll</li>
+            <li>✅ <strong>Drag & Drop Bearbeitung:</strong> Manuelles Anpassen der Gruppenergebnisse</li>
+            <li>✅ <strong>Rating-Anpassung:</strong> Dynamische Anpassung nach Spielergebnissen</li>
+            <li>✅ <strong>Ergebnis teilen:</strong> Einfaches Teilen via Link oder QR-Code</li>
+        </ul>
+    </div>
+    
+    <!-- Formular-Abschluss -->
+    {% if selected_player_list_id %}
+        <input type="hidden" name="selected_player_list_id" value="{{ selected_player_list_id }}">
     {% endif %}
 
-        <div class="form-section">
-        <h3>Geplante Erweiterungen</h3>
-        <p>Diese App wird kontinuierlich erweitert. In zukünftigen Updates werden folgende Funktionen hinzugefügt:</p>
-        <ul>
-            <li>🔜 <strong>Modus-Auswahl:</strong> Projekt-Teams, Sport-Teams oder Standard-Modus</li>
-            <li>🔜 <strong>Sportarten-spezifische Einstellungen</strong> für präzise Gruppeneinteilungen</li>
-            <li>🔜 <strong>Individuelle Bewertungen:</strong> Flexible Rating-Systeme für Teilnehmer</li>
-            <li>🔜 <strong>Rollen & Positionen:</strong> Definition und Verteilung von spezifischen Rollen</li>
-            <li>🔜 <strong>Team-Präferenzen:</strong> Festlegen wer zusammen oder getrennt sein soll</li>
-            <li>🔜 <strong>Drag & Drop Bearbeitung:</strong> Manuelles Anpassen der Gruppenergebnisse</li>
-            <li>🔜 <strong>Ergebnis teilen:</strong> Einfaches Teilen via Link oder QR-Code</li>
-        </ul>
-        <p>Details zu den geplanten Funktionen findest du in der <a href="https://github.com/reneidou/complete-group-randomizer/tree/create-functional-basis-version" target="_blank">Projekt-README</a>.</p>
-    </div>
-
+    <button type="submit" class="submit-btn">Gruppen generieren</button>
 {% endblock %}

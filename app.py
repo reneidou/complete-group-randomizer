@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, g
+from flask import Flask, render_template, request, redirect, url_for, flash, session, g, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import random
@@ -6,6 +6,7 @@ import os
 import json
 from functools import wraps
 from datetime import datetime
+import uuid
 
 app = Flask(__name__)
 
@@ -48,7 +49,46 @@ class GeneratedGroup(db.Model):
     groups_json = db.Column(db.Text, nullable=False)
     all_names_json = db.Column(db.Text, nullable=False)
     group_settings_json = db.Column(db.Text, nullable=False)
+    ratings_json = db.Column(db.Text, nullable=True)
+    roles_json = db.Column(db.Text, nullable=True)
+    preferences_json = db.Column(db.Text, nullable=True)
+    share_id = db.Column(db.String(36), unique=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+class PlayerRating(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    player_list_id = db.Column(db.Integer, db.ForeignKey('player_list.id'), nullable=False)
+    player_name = db.Column(db.String(120), nullable=False)
+    rating = db.Column(db.Float, nullable=False, default=0.0)
+    min_rating = db.Column(db.Float, nullable=False, default=1.0)
+    max_rating = db.Column(db.Float, nullable=False, default=5.0)
+    rating_direction = db.Column(db.Integer, nullable=False, default=1)
+
+class PlayerRole(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    player_list_id = db.Column(db.Integer, db.ForeignKey('player_list.id'), nullable=False)
+    role_name = db.Column(db.String(120), nullable=False)
+    min_per_group = db.Column(db.Integer, nullable=False, default=1)
+    max_per_group = db.Column(db.Integer, nullable=False, default=1)
+
+class PlayerRoleAssignment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    player_list_id = db.Column(db.Integer, db.ForeignKey('player_list.id'), nullable=False)
+    player_name = db.Column(db.String(120), nullable=False)
+    role_id = db.Column(db.Integer, db.ForeignKey('player_role.id'), nullable=False)
+
+class PlayerPreference(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    player_list_id = db.Column(db.Integer, db.ForeignKey('player_list.id'), nullable=False)
+    player_name = db.Column(db.String(120), nullable=False)
+    preference_type = db.Column(db.String(20), nullable=False)
+    target_player = db.Column(db.String(120), nullable=False)
+
+class GroupResult(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    generated_group_id = db.Column(db.Integer, db.ForeignKey('generated_group.id'), nullable=False)
+    group_index = db.Column(db.Integer, nullable=False)
+    score = db.Column(db.Float, nullable=False, default=0.0)
 
 # --- Datenbank initialisieren ---
 with app.app_context():
@@ -73,12 +113,41 @@ def login_required(view):
                     'names': request.form.getlist('name[]'),
                     'group_type': request.form.get('group_type'),
                     'num_groups': request.form.get('num_groups'),
-                    'group_size': request.form.get('group_size')
+                    'group_size': request.form.get('group_size'),
+                    'mode': request.form.get('mode'),
+                    'sport': request.form.get('sport')
                 }
             session['next_url'] = request.url
             return redirect(url_for('login'))
         return view(**kwargs)
     return wrapped_view
+
+# --- Hilfsfunktionen ---
+def generate_balanced_groups(names, group_type, num_groups, group_size, ratings=None, roles=None, preferences=None):
+    groups = []
+    
+    # Basisgruppen erstellen
+    if group_type == 'num_groups':
+        num_groups = int(num_groups)
+        groups = [[] for _ in range(num_groups)]
+    else:
+        group_size = int(group_size)
+        num_groups = (len(names) + group_size - 1) // group_size
+        groups = [[] for _ in range(num_groups)]
+    
+    # Spieler mit Ratings sortieren
+    sorted_players = names
+    if ratings:
+        sorted_players = sorted(names, key=lambda x: ratings.get(x, 0), reverse=True)
+    
+    # Spieler auf Gruppen verteilen (Snake-Draft)
+    for i, player in enumerate(sorted_players):
+        group_index = i % num_groups
+        if i // num_groups % 2 == 1:
+            group_index = num_groups - 1 - group_index
+        groups[group_index].append(player)
+    
+    return groups
 
 # --- Routen ---
 @app.route('/')
@@ -88,13 +157,18 @@ def home():
     num_groups = ''
     group_size = ''
     selected_player_list_id = session.get('selected_player_list_id_for_save')
+    mode = 'standard'
+    sport = ''
 
+    # Temporäre Daten laden
     if 'temp_form_data' in session:
         temp_data = session.pop('temp_form_data')
         loaded_names = temp_data.get('names', [])
         group_type = temp_data.get('group_type', 'num_groups')
         num_groups = temp_data.get('num_groups', '')
         group_size = temp_data.get('group_size', '')
+        mode = temp_data.get('mode', 'standard')
+        sport = temp_data.get('sport', '')
         flash('Deine vorherigen Eingaben wurden wiederhergestellt!', 'info')
 
     if 'temp_names' in session:
@@ -104,6 +178,8 @@ def home():
             group_type = temp_settings.get('group_type', 'num_groups')
             num_groups = temp_settings.get('num_groups', '')
             group_size = temp_settings.get('group_size', '')
+            mode = temp_settings.get('mode', 'standard')
+            sport = temp_settings.get('sport', '')
         if 'temp_player_list_id' in session:
             selected_player_list_id = session.pop('temp_player_list_id')
             session['selected_player_list_id_for_save'] = selected_player_list_id
@@ -113,82 +189,74 @@ def home():
                            group_type=group_type,
                            num_groups=num_groups,
                            group_size=group_size,
-                           selected_player_list_id=selected_player_list_id)
+                           selected_player_list_id=selected_player_list_id,
+                           mode=mode,
+                           sport=sport)
 
 @app.route('/generate_groups', methods=['POST'])
 def generate_groups():
+    # Basisinformationen
     names = [name.strip() for name in request.form.getlist('name[]') if name.strip()]
     group_type = request.form.get('group_type')
     num_groups_str = request.form.get('num_groups')
     group_size_str = request.form.get('group_size')
-
-    if 'selected_player_list_id' in request.form:
-        session['selected_player_list_id_for_save'] = request.form.get('selected_player_list_id')
-    else:
-        session.pop('selected_player_list_id_for_save', None)
-
+    mode = request.form.get('mode', 'standard')
+    sport = request.form.get('sport', '')
+    
+    # Erweiterte Einstellungen
+    ratings = {}
+    roles = {}
+    preferences = []
+    
+    # Spieler-IDs für Ratings extrahieren
+    for key, value in request.form.items():
+        if key.startswith('rating_'):
+            player_name = key.split('_')[1]
+            ratings[player_name] = float(value)
+    
+    # Rollen und Präferenzen verarbeiten (vereinfacht)
+    # In einer echten Implementierung würde dies komplexer sein
+    
+    # Gruppen generieren
     if not names:
         flash('Bitte gib mindestens einen Namen ein, um Gruppen zu generieren.', 'error')
         return redirect(url_for('home'))
-
-    random.shuffle(names)
-    groups = []
-
+    
     try:
-        if group_type == 'num_groups':
-            num_groups = int(num_groups_str)
-            if num_groups <= 0:
-                flash('Anzahl der Gruppen muss positiv sein.', 'error')
-                return redirect(url_for('home'))
-            if num_groups > len(names):
-                flash(f'Du kannst nicht mehr Gruppen als Personen erstellen ({num_groups} Gruppen für {len(names)} Personen).', 'error')
-                return redirect(url_for('home'))
-
-            for i in range(num_groups):
-                groups.append([])
-            for i, name in enumerate(names):
-                groups[i % num_groups].append(name)
-                
-        elif group_type == 'group_size':
-            group_size = int(group_size_str)
-            if group_size <= 0:
-                flash('Größe der Gruppen muss positiv sein.', 'error')
-                return redirect(url_for('home'))
-            if group_size > len(names):
-                flash(f'Gruppengrösse ({group_size}) kann nicht grösser sein als die Anzahl der Personen ({len(names)}).', 'error')
-                return redirect(url_for('home'))
-
-            current_group = []
-            for name in names:
-                current_group.append(name)
-                if len(current_group) == group_size:
-                    groups.append(current_group)
-                    current_group = []
-            if current_group:
-                if groups:
-                    for i, remaining_name in enumerate(current_group):
-                        groups[i % len(groups)].append(remaining_name)
-                else:
-                    groups.append(current_group)
-
-    except ValueError:
-        flash('Bitte gib eine gültige Zahl für die Gruppenanzahl oder Gruppengrösse ein.', 'error')
-        return redirect(url_for('home'))
+        groups = generate_balanced_groups(
+            names, 
+            group_type, 
+            num_groups_str, 
+            group_size_str, 
+            ratings,
+            roles,
+            preferences
+        )
     except Exception as e:
-        flash(f'Ein Fehler ist aufgetreten: {e}', 'error')
+        flash(f'Ein Fehler ist aufgetreten: {str(e)}', 'error')
         return redirect(url_for('home'))
-
-    session['generated_names'] = names
-    session['group_settings'] = {
+    
+    # Gruppeneinstellungen speichern
+    group_settings = {
         'group_type': group_type,
         'num_groups': num_groups_str,
-        'group_size': group_size_str
+        'group_size': group_size_str,
+        'mode': mode,
+        'sport': sport
     }
-
+    
+    # Für Ergebnis-Seite vorbereiten
+    session['generated_names'] = names
+    session['group_settings'] = group_settings
+    
     return render_template('results.html', 
                            groups=groups, 
+                           ratings=ratings,
                            all_names_json=json.dumps(names),
-                           group_settings_json=json.dumps(session['group_settings']))
+                           group_settings_json=json.dumps(group_settings),
+                           ratings_json=json.dumps(ratings),
+                           roles_json=json.dumps(roles),
+                           preferences_json=json.dumps(preferences))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -329,6 +397,9 @@ def save_generated_group():
     groups_json = request.form['groups_json']
     all_names_json = request.form['all_names_json']
     group_settings_json = request.form['group_settings_json']
+    ratings_json = request.form.get('ratings_json', '{}')
+    roles_json = request.form.get('roles_json', '{}')
+    preferences_json = request.form.get('preferences_json', '[]')
     player_list_id = session.get('selected_player_list_id_for_save')
 
     if not player_list_id:
@@ -345,6 +416,10 @@ def save_generated_group():
         groups_json=groups_json,
         all_names_json=all_names_json,
         group_settings_json=group_settings_json,
+        ratings_json=ratings_json,
+        roles_json=roles_json,
+        preferences_json=preferences_json,
+        share_id=str(uuid.uuid4()),
         player_list=player_list
     )
     db.session.add(new_generated_group)
@@ -380,6 +455,41 @@ def delete_generated_group(group_id):
     db.session.commit()
     flash(f'Gruppeneinteilung "{generated_group.name}" erfolgreich gelöscht.', 'success')
     return redirect(url_for('my_player_lists'))
+
+@app.route('/save_group_score', methods=['POST'])
+@login_required
+def save_group_score():
+    try:
+        data = request.json
+        group_id = data.get('group_id')
+        group_index = data.get('group_index')
+        score = data.get('score')
+        
+        # Punkte speichern
+        new_score = GroupResult(
+            generated_group_id=group_id,
+            group_index=group_index,
+            score=score
+        )
+        db.session.add(new_score)
+        db.session.commit()
+        
+        return jsonify({'success': True, 'message': 'Punkte erfolgreich gespeichert!'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/share/<share_id>')
+def share_group(share_id):
+    group_data = GeneratedGroup.query.filter_by(share_id=share_id).first()
+    
+    if not group_data:
+        flash('Geteilte Gruppen nicht gefunden oder abgelaufen', 'error')
+        return redirect(url_for('home'))
+    
+    return render_template('shared_group.html', 
+                          groups=json.loads(group_data.groups_json),
+                          group_name=group_data.name,
+                          timestamp=group_data.timestamp.strftime('%d.%m.%Y %H:%M'))
 
 if __name__ == '__main__':
     app.run(debug=True)
